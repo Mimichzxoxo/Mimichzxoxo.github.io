@@ -3,7 +3,20 @@ import sqlite3
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
-from database import get_db, init_db
+from database import get_db as get_sqlite_db, init_db
+from database_mysql import get_mysql_db
+
+# Mode Database: Set TRUE untuk menggunakan MySQL (phpMyAdmin), FALSE untuk SQLite
+USE_MYSQL = True
+
+def get_db():
+    if USE_MYSQL:
+        try:
+            return get_mysql_db()
+        except Exception as e:
+            print("Notice: Fallback ke SQLite karena MySQL phpMyAdmin belum terkoneksi:", e)
+            return get_sqlite_db()
+    return get_sqlite_db()
 
 app = Flask(__name__)
 app.secret_key = 'wargaconnect_super_secret_key_rt_rw'
@@ -13,6 +26,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Ensure DB initialized on startup
 init_db()
+
 
 # --- HELPER FUNCTIONS & DECORATORS ---
 def is_logged_in():
