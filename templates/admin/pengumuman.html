@@ -1,0 +1,73 @@
+{% extends "admin/layout_admin.html" %}
+{% block title %}Kelola Pengumuman - SIM RT/RW{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Kelola Pengumuman RT/RW</h1>
+        <p class="text-xs text-gray-500">Terbitkan berita, himbauan, & informasi penting kepada seluruh warga.</p>
+    </div>
+
+    <!-- Form Tambah Pengumuman -->
+    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <h2 class="font-bold text-sm text-gray-800 mb-3">+ Terbitkan Pengumuman Baru</h2>
+        <form action="/admin/pengumuman" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+            <input type="hidden" name="action" value="add"/>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Wilayah RT Target</label>
+                <select name="id_rt" required class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    {% for r in rt_list %}
+                    <option value="{{ r.id_rt }}">RT {{ r.nomor_rt }} / RW {{ r.rw }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="md:col-span-3">
+                <label class="font-semibold text-gray-700 block mb-1">Judul Pengumuman</label>
+                <input required name="judul" placeholder="Contoh: Pemadaman Listrik Sementara PLN" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary"/>
+            </div>
+            <div class="md:col-span-4">
+                <label class="font-semibold text-gray-700 block mb-1">Konten Pengumuman</label>
+                <textarea required name="konten" rows="3" placeholder="Tuliskan isi pengumuman lengkap untuk warga..." class="w-full p-3 rounded-lg border border-gray-300 outline-none focus:border-primary resize-none"></textarea>
+            </div>
+            <div class="md:col-span-4 flex justify-end">
+                <button type="submit" class="h-9 px-6 bg-primary text-white rounded-lg font-semibold hover:bg-primary-container">Publish Pengumuman</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Pengumuman -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-xs">
+            <thead>
+                <tr class="bg-gray-50 text-gray-500 uppercase font-semibold">
+                    <th class="py-3 px-4">ID</th>
+                    <th class="py-3 px-4">Judul Pengumuman</th>
+                    <th class="py-3 px-4">RT</th>
+                    <th class="py-3 px-4">Tgl Publish</th>
+                    <th class="py-3 px-4">Isi Konten</th>
+                    <th class="py-3 px-4 text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for p in pengumuman_list %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-3 px-4 font-bold text-gray-700">#PGM-{{ p.id_pengumuman }}</td>
+                    <td class="py-3 px-4 font-bold text-gray-900">{{ p.judul }}</td>
+                    <td class="py-3 px-4 text-primary font-semibold">RT {{ p.nomor_rt }}</td>
+                    <td class="py-3 px-4 text-gray-500">{{ p.tanggal_publish }}</td>
+                    <td class="py-3 px-4 text-gray-600 max-w-[300px] truncate">{{ p.konten }}</td>
+                    <td class="py-3 px-4 text-right">
+                        <form action="/admin/pengumuman" method="POST" onsubmit="return confirm('Hapus pengumuman ini?');" class="inline">
+                            <input type="hidden" name="action" value="delete"/>
+                            <input type="hidden" name="id_pengumuman" value="{{ p.id_pengumuman }}"/>
+                            <button type="submit" class="text-red-600 font-semibold hover:underline">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center py-6 text-gray-400">Belum ada pengumuman terbit.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

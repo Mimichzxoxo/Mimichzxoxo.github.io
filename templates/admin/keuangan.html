@@ -1,0 +1,137 @@
+{% extends "admin/layout_admin.html" %}
+{% block title %}Buku Kas Keuangan - SIM RT/RW{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Buku Kas Keuangan RT/RW</h1>
+        <p class="text-xs text-gray-500">Pencatatan buku besar transaksi Pemasukan & Pengeluaran operasional RT.</p>
+    </div>
+
+    <!-- Stats Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+            <span class="text-xs text-gray-500 font-semibold uppercase">Total Pemasukan</span>
+            <div class="text-2xl font-bold text-green-700 mt-2">Rp {{ "{:,.0f}".format(pemasukan) }}</div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+            <span class="text-xs text-gray-500 font-semibold uppercase">Total Pengeluaran</span>
+            <div class="text-2xl font-bold text-red-600 mt-2">Rp {{ "{:,.0f}".format(pengeluaran) }}</div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+            <span class="text-xs text-gray-500 font-semibold uppercase">Saldo Kas Bersih</span>
+            <div class="text-2xl font-bold text-primary mt-2">Rp {{ "{:,.0f}".format(pemasukan - pengeluaran) }}</div>
+        </div>
+    </div>
+
+    <!-- Form Tambah Transaksi -->
+    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <h2 class="font-bold text-sm text-gray-800 mb-3">+ Catat Transaksi Kas</h2>
+        <form action="/admin/keuangan" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+            <input type="hidden" name="action" value="add"/>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Wilayah RT</label>
+                <select name="id_rt" required class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    {% for r in rt_list %}
+                    <option value="{{ r.id_rt }}">RT {{ r.nomor_rt }} / RW {{ r.rw }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Tanggal Transaksi</label>
+                <input required name="tanggal" type="datetime-local" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary"/>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Jenis Transaksi</label>
+                <select name="jenis" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    <option value="pemasukan">Pemasukan (+)</option>
+                    <option value="pengeluaran">Pengeluaran (-)</option>
+                </select>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Kategori</label>
+                <select name="kategori" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    <option value="iuran">iuran</option>
+                    <option value="pembelian">pembelian</option>
+                    <option value="konsumsi kegiatan">konsumsi kegiatan</option>
+                    <option value="lainnya">lainnya</option>
+                </select>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Jumlah Nominal (Rp)</label>
+                <input required name="jumlah" type="number" step="1000" placeholder="100000" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary"/>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Warga Terkait (Opsional)</label>
+                <select name="id_warga" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    <option value="">-- Tidak ada --</option>
+                    {% for w in warga_list %}
+                    <option value="{{ w.id_warga }}">{{ w.nama }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Inventaris Terkait (Opsional)</label>
+                <select name="id_inventaris" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    <option value="">-- Tidak ada --</option>
+                    {% for i in inventaris_list %}
+                    <option value="{{ i.id_inventaris }}">{{ i.nama_inventaris }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Keterangan / Uraian</label>
+                <input name="keterangan" placeholder="Contoh: Pembelian BBM Mesin Rumput..." class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary"/>
+            </div>
+            <div class="md:col-span-4 flex justify-end">
+                <button type="submit" class="h-9 px-6 bg-primary text-white rounded-lg font-semibold hover:bg-primary-container">Simpan Transaksi Kas</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Keuangan -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-xs">
+            <thead>
+                <tr class="bg-gray-50 text-gray-500 uppercase font-semibold">
+                    <th class="py-3 px-4">ID Transaksi</th>
+                    <th class="py-3 px-4">Tanggal</th>
+                    <th class="py-3 px-4">RT</th>
+                    <th class="py-3 px-4">Jenis</th>
+                    <th class="py-3 px-4">Kategori</th>
+                    <th class="py-3 px-4">Uraian / Keterangan</th>
+                    <th class="py-3 px-4">Jumlah Nominal</th>
+                    <th class="py-3 px-4 text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for k in keuangan_list %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-3 px-4 font-bold text-gray-700">#KAS-{{ k.id_keuangan }}</td>
+                    <td class="py-3 px-4 text-gray-500">{{ k.tanggal }}</td>
+                    <td class="py-3 px-4 font-semibold text-primary">RT {{ k.nomor_rt }}</td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 rounded font-bold {% if k.jenis == 'pemasukan' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ k.jenis | upper }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-gray-700 font-medium">{{ k.kategori }}</td>
+                    <td class="py-3 px-4 text-gray-800">{{ k.keterangan }}</td>
+                    <td class="py-3 px-4 font-bold {% if k.jenis == 'pemasukan' %}text-green-700{% else %}text-red-600{% endif %}">
+                        {% if k.jenis == 'pemasukan' %}+{% else %}-{% endif %} Rp {{ "{:,.0f}".format(k.jumlah) }}
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <form action="/admin/keuangan" method="POST" onsubmit="return confirm('Hapus transaksi ini?');" class="inline">
+                            <input type="hidden" name="action" value="delete"/>
+                            <input type="hidden" name="id_keuangan" value="{{ k.id_keuangan }}"/>
+                            <button type="submit" class="text-red-600 font-semibold hover:underline">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="8" class="text-center py-6 text-gray-400">Belum ada catatan kas keuangan.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

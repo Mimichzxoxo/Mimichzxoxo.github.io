@@ -1,0 +1,64 @@
+{% extends "warga/layout_warga.html" %}
+{% block title %}Kegiatan Warga - WargaConnect{% endblock %}
+{% block content %}
+<div class="space-y-4">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Kegiatan Warga</h1>
+        <p class="text-xs text-gray-500">Jadwal kegiatan rutin dan khusus lingkungan kita.</p>
+    </div>
+
+    <!-- Agenda Cards List -->
+    <div class="space-y-4">
+        {% for k in kegiatan %}
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden p-4 flex flex-col gap-3 relative shadow-sm">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-bold">RT {{ k.id_rt }}</span>
+                    {% if k.my_status %}
+                    <span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-[10px] font-bold">✓ Terdaftar</span>
+                    {% endif %}
+                </div>
+                <span class="text-[10px] text-gray-400">Total: {{ k.total_peserta }} Peserta</span>
+            </div>
+
+            <div>
+                <h3 class="font-bold text-base text-gray-900">{{ k.nama_kegiatan }}</h3>
+                <p class="text-xs text-gray-500 mt-1">PJ: {{ k.pj_nama or 'Pengurus RT' }}</p>
+            </div>
+
+            <div class="flex flex-col gap-1 text-xs text-gray-600 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">schedule</span>
+                    <span>{{ k.tanggal_kegiatan }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[16px]">location_on</span>
+                    <span>{{ k.lokasi }}</span>
+                </div>
+                {% if k.keterangan %}
+                <div class="flex items-center gap-2 text-gray-500">
+                    <span class="material-symbols-outlined text-[16px]">notes</span>
+                    <span>{{ k.keterangan }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="pt-1 flex items-center justify-between">
+                <span class="text-[11px] text-gray-500 font-medium">Gabung Gotong Royong</span>
+                {% if not k.my_status %}
+                <form action="/warga/kegiatan/ikut/{{ k.id_kegiatan }}" method="POST">
+                    <button type="submit" class="h-9 px-5 bg-primary text-white rounded-lg font-semibold text-xs hover:bg-primary-container active:scale-95 transition-all">
+                        Ikut Serta
+                    </button>
+                </form>
+                {% else %}
+                <span class="text-xs font-bold text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-200">Anda Ikut Serta</span>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-xs text-gray-400">Belum ada agenda kegiatan warga.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

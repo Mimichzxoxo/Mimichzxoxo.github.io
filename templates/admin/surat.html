@@ -1,0 +1,65 @@
+{% extends "admin/layout_admin.html" %}
+{% block title %}Pelayanan Surat - SIM RT/RW{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Pelayanan Surat & Validasi TTE</h1>
+            <p class="text-xs text-gray-500">Kelola permohonan surat keterangan domisili, SKU, SKTM, & verifikasi TTE digital.</p>
+        </div>
+    </div>
+
+    <!-- Table Surat -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-xs">
+            <thead>
+                <tr class="bg-gray-50 text-gray-500 uppercase font-semibold">
+                    <th class="py-3 px-4">No. Surat & Tgl</th>
+                    <th class="py-3 px-4">Pemohon Warga</th>
+                    <th class="py-3 px-4">Jenis Layanan Surat</th>
+                    <th class="py-3 px-4">Keperluan</th>
+                    <th class="py-3 px-4">Status Verifikasi</th>
+                    <th class="py-3 px-4 text-right">Aksi Update Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for s in surat_list %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-3.5 px-4 font-numeric-table">
+                        <div class="font-bold text-primary">{{ s.no_surat }}</div>
+                        <div class="text-[10px] text-gray-400">{{ s.tanggal_surat }}</div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <div class="font-bold text-gray-900">{{ s.nama_warga }}</div>
+                        <span class="text-[10px] text-gray-500">RT {{ s.nomor_rt }}</span>
+                    </td>
+                    <td class="py-3.5 px-4 font-semibold text-gray-800">{{ s.jenis_surat }}</td>
+                    <td class="py-3.5 px-4 text-gray-600 max-w-[200px] truncate">{{ s.keperluan }}</td>
+                    <td class="py-3.5 px-4">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold 
+                            {% if s.status == 'selesai' %}bg-green-100 text-green-800
+                            {% elif s.status == 'diproses' %}bg-blue-100 text-blue-800
+                            {% else %}bg-amber-100 text-amber-800{% endif %}">
+                            {{ s.status | upper }}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-right">
+                        <form action="/admin/surat" method="POST" class="inline-flex items-center gap-1">
+                            <input type="hidden" name="id_surat" value="{{ s.id_surat }}"/>
+                            <select name="status" onchange="this.form.submit()" class="h-8 rounded border border-gray-300 px-2 text-xs font-semibold">
+                                <option value="pending" {% if s.status == 'pending' %}selected{% endif %}>Pending</option>
+                                <option value="diproses" {% if s.status == 'diproses' %}selected{% endif %}>Diproses</option>
+                                <option value="selesai" {% if s.status == 'selesai' %}selected{% endif %}>Selesai (TTE)</option>
+                                <option value="ditolak" {% if s.status == 'ditolak' %}selected{% endif %}>Ditolak</option>
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center py-6 text-gray-400">Belum ada pengajuan surat.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
