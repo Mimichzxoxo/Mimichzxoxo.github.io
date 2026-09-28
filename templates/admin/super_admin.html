@@ -1,0 +1,69 @@
+{% extends "admin/layout_admin.html" %}
+{% block title %}Super Admin - SIM RT/RW{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Akses Super Admin Portal</h1>
+        <p class="text-xs text-gray-500">Kelola akun administrator pengurus RT/RW.</p>
+    </div>
+
+    <!-- Form Tambah Super Admin -->
+    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <h2 class="font-bold text-sm text-gray-800 mb-3">+ Tambah Super Admin</h2>
+        <form action="/admin/super-admin" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+            <input type="hidden" name="action" value="add"/>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Nama Lengkap</label>
+                <input required name="nama" placeholder="Contoh: Pak Bambang Pamungkas" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary"/>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Username Admin</label>
+                <input required name="username" placeholder="admin_rw" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary"/>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Password</label>
+                <input required name="password" type="password" placeholder="Password admin..." class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary"/>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="w-full h-9 bg-primary text-white rounded-lg font-semibold hover:bg-primary-container">Simpan Admin</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Super Admin -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-xs">
+            <thead>
+                <tr class="bg-gray-50 text-gray-500 uppercase font-semibold">
+                    <th class="py-3 px-4">ID Admin</th>
+                    <th class="py-3 px-4">Nama Lengkap Admin</th>
+                    <th class="py-3 px-4">Username</th>
+                    <th class="py-3 px-4 text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for a in admins %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-3 px-4 font-bold text-gray-700">#ADM-{{ a.id_superadmin }}</td>
+                    <td class="py-3 px-4 font-bold text-gray-900">{{ a.nama }}</td>
+                    <td class="py-3 px-4 text-primary font-semibold">{{ a.username }}</td>
+                    <td class="py-3 px-4 text-right">
+                        {% if a.id_superadmin != admin.id_superadmin %}
+                        <form action="/admin/super-admin" method="POST" onsubmit="return confirm('Hapus admin ini?');" class="inline">
+                            <input type="hidden" name="action" value="delete"/>
+                            <input type="hidden" name="id_superadmin" value="{{ a.id_superadmin }}"/>
+                            <button type="submit" class="text-red-600 font-semibold hover:underline">Hapus</button>
+                        </form>
+                        {% else %}
+                        <span class="text-gray-400 font-semibold">Akun Anda</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center py-6 text-gray-400">Belum ada akun admin.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>WargaConnect / SIM RT/RW - GitHub Pages Edition</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#006194",
+                        "primary-container": "#007bb9",
+                        "on-primary-container": "#fdfcff",
+                        "primary-fixed": "#cce5ff",
+                        "on-primary-fixed": "#001d31",
+                        "secondary": "#00668a",
+                        "secondary-fixed": "#c4e7ff",
+                        "tertiary": "#006947",
+                        "tertiary-fixed": "#6ffbbe",
+                        "surface": "#f8f9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container": "#e5eeff",
+                        "surface-container-high": "#dce9ff",
+                        "on-surface": "#0b1c30",
+                        "on-surface-variant": "#3f4850",
+                        "outline": "#707881"
+                    },
+                    fontFamily: {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "title-md": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9ff; }
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+
+<!-- GitHub Pages Banner Mode Switcher -->
+<div class="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white px-4 py-2 flex items-center justify-between text-xs border-b border-gray-700 shadow-md">
+    <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
+        <span class="font-bold">WargaConnect (GitHub Pages Live)</span>
+        <span class="text-gray-400 hidden sm:inline">| 13 Tabel ERD Data Active</span>
+    </div>
+    <div class="flex items-center gap-2">
+        <span class="text-gray-400 text-[11px] hidden md:inline">Mode Tampilan:</span>
+        <button onclick="setPortalMode('admin')" id="btn-mode-admin" class="px-3 py-1 rounded font-bold bg-primary text-white transition-all">
+            🖥️ Portal Admin RT/RW
+        </button>
+        <button onclick="setPortalMode('warga')" id="btn-mode-warga" class="px-3 py-1 rounded font-bold bg-gray-700 text-gray-300 hover:bg-gray-600 transition-all">
+            📱 Portal Warga (Mobile)
+        </button>
+    </div>
+</div>
+
+<div class="pt-10">
+
+    <!-- ================= PORTAL ADMIN DESKTOP VIEW ================= -->
+    <div id="view-admin" class="min-h-screen">
+        <!-- Sidebar -->
+        <aside class="fixed left-0 top-10 h-[calc(100vh-40px)] w-64 bg-surface-container-lowest z-40 flex flex-col border-r border-gray-200">
+            <div class="h-14 flex items-center px-5 gap-3 border-b border-gray-100">
+                <div class="w-7 h-7 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-sm">S</div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-primary text-sm leading-none">SIM RT/RW</span>
+                    <span class="text-[9px] text-gray-400 uppercase mt-0.5">Portal RW 08 Sukamaju</span>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto px-3 py-3 space-y-4 text-xs">
+                <div>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase px-2">Menu Utama</span>
+                    <nav class="mt-1 space-y-1">
+                        <button onclick="showAdminSection('dashboard')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 bg-primary text-white" id="admin-nav-dashboard">
+                            <span class="material-symbols-outlined text-[18px]">grid_view</span> Dashboard
+                        </button>
+                        <button onclick="showAdminSection('rt')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-rt">
+                            <span class="material-symbols-outlined text-[18px]">location_city</span> Data Wilayah (RT)
+                        </button>
+                        <button onclick="showAdminSection('keluarga')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-keluarga">
+                            <span class="material-symbols-outlined text-[18px]">family_restroom</span> Data Keluarga (KK)
+                        </button>
+                        <button onclick="showAdminSection('warga')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-warga">
+                            <span class="material-symbols-outlined text-[18px]">group</span> Data Warga
+                        </button>
+                    </nav>
+                </div>
+
+                <div>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase px-2">Kegiatan & Fasilitas</span>
+                    <nav class="mt-1 space-y-1">
+                        <button onclick="showAdminSection('kegiatan')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-kegiatan">
+                            <span class="material-symbols-outlined text-[18px]">event_upcoming</span> Agenda Kegiatan
+                        </button>
+                        <button onclick="showAdminSection('peserta')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-peserta">
+                            <span class="material-symbols-outlined text-[18px]">how_to_reg</span> Absensi Peserta
+                        </button>
+                        <button onclick="showAdminSection('inventaris')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-inventaris">
+                            <span class="material-symbols-outlined text-[18px]">inventory_2</span> Inventaris Aset
+                        </button>
+                    </nav>
+                </div>
+
+                <div>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase px-2">Layanan & Keuangan</span>
+                    <nav class="mt-1 space-y-1">
+                        <button onclick="showAdminSection('surat')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-surat">
+                            <span class="material-symbols-outlined text-[18px]">mark_email_unread</span> Surat Pengantar
+                        </button>
+                        <button onclick="showAdminSection('iuran')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-iuran">
+                            <span class="material-symbols-outlined text-[18px]">receipt_long</span> Master Iuran
+                        </button>
+                        <button onclick="showAdminSection('pembayaran')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-pembayaran">
+                            <span class="material-symbols-outlined text-[18px]">payments</span> Setoran Pembayaran
+                        </button>
+                        <button onclick="showAdminSection('keuangan')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-keuangan">
+                            <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span> Buku Kas RT/RW
+                        </button>
+                    </nav>
+                </div>
+
+                <div>
+                    <span class="text-[10px] text-gray-400 font-bold uppercase px-2">Komunikasi</span>
+                    <nav class="mt-1 space-y-1">
+                        <button onclick="showAdminSection('pengumuman')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-pengumuman">
+                            <span class="material-symbols-outlined text-[18px]">campaign</span> Pengumuman
+                        </button>
+                        <button onclick="showAdminSection('aspirasi')" class="nav-admin-btn w-full text-left px-3 py-2 rounded-lg font-semibold flex items-center gap-2 text-gray-600 hover:bg-gray-100" id="admin-nav-aspirasi">
+                            <span class="material-symbols-outlined text-[18px]">forum</span> Aspirasi Warga
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Admin Content Area -->
+        <main class="pl-64 pt-4 p-8">
+            <!-- SECTION DASHBOARD -->
+            <div id="sec-dashboard" class="admin-sec space-y-6">
+                <div class="bg-gradient-to-r from-primary to-primary-container p-6 rounded-2xl text-white shadow-md">
+                    <h1 class="text-2xl font-bold">Selamat Datang, Pak Bambang Pamungkas</h1>
+                    <p class="text-xs text-blue-100 mt-1">Portal Administrasi RW 08 Sukamaju - 13 Tabel ERD Terintegrasi</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <span class="text-xs text-gray-500 font-bold">TOTAL RT</span>
+                        <div class="text-2xl font-bold text-primary mt-1" id="dash-count-rt">6 RT</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <span class="text-xs text-gray-500 font-bold">TOTAL KK</span>
+                        <div class="text-2xl font-bold text-green-700 mt-1" id="dash-count-kk">5 KK</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <span class="text-xs text-gray-500 font-bold">TOTAL WARGA</span>
+                        <div class="text-2xl font-bold text-gray-900 mt-1" id="dash-count-warga">5 Jiwa</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                        <span class="text-xs text-gray-500 font-bold">SALDO KAS RT</span>
+                        <div class="text-2xl font-bold text-emerald-600 mt-1" id="dash-count-saldo">Rp 350.000</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION DATA RT -->
+            <div id="sec-rt" class="admin-sec hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Data Wilayah (RT)</h1>
+                        <p class="text-xs text-gray-500">Tabel RT - Daftar Wilayah Rukun Tetangga</p>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <h2 class="font-bold text-xs text-gray-800 mb-2">+ Tambah RT</h2>
+                    <form onsubmit="addRT(event)" class="flex gap-2 text-xs">
+                        <input id="in-rt-nomor" required placeholder="Nomor RT (Contoh: 007)" class="border p-2 rounded w-48"/>
+                        <input id="in-rt-rw" value="08" required class="border p-2 rounded w-24"/>
+                        <input id="in-rt-kel" value="Sukamaju" required class="border p-2 rounded w-36"/>
+                        <input id="in-rt-kec" value="Cilodong" required class="border p-2 rounded w-36"/>
+                        <button type="submit" class="bg-primary text-white font-bold px-4 py-2 rounded">Simpan RT</button>
+                    </form>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID RT</th><th class="p-3">Nomor RT</th><th class="p-3">RW</th><th class="p-3">Kelurahan</th><th class="p-3">Kecamatan</th><th class="p-3 text-right">Aksi</th></tr>
+                        </thead>
+                        <tbody id="tb-rt" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION DATA KELUARGA -->
+            <div id="sec-keluarga" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Data Keluarga (KK)</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID KK</th><th class="p-3">ID RT</th><th class="p-3">Alamat Domisili</th><th class="p-3">Kode Pos</th></tr>
+                        </thead>
+                        <tbody id="tb-keluarga" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION DATA WARGA -->
+            <div id="sec-warga" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Data Warga</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID Warga</th><th class="p-3">Nama Lengkap</th><th class="p-3">Gender</th><th class="p-3">No HP</th><th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">Status</th></tr>
+                        </thead>
+                        <tbody id="tb-warga" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION KEGIATAN -->
+            <div id="sec-kegiatan" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Agenda Kegiatan Warga</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID</th><th class="p-3">Nama Kegiatan</th><th class="p-3">Tanggal</th><th class="p-3">Lokasi</th><th class="p-3">Keterangan</th></tr>
+                        </thead>
+                        <tbody id="tb-kegiatan" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION PESERTA -->
+            <div id="sec-peserta" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Peserta Kegiatan & Absensi</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID Peserta</th><th class="p-3">ID Kegiatan</th><th class="p-3">ID Warga</th><th class="p-3">Status Kehadiran</th></tr>
+                        </thead>
+                        <tbody id="tb-peserta" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION INVENTARIS -->
+            <div id="sec-inventaris" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Inventaris Barang RT</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID</th><th class="p-3">Nama Barang</th><th class="p-3">Kategori</th><th class="p-3">Jumlah</th><th class="p-3">Kondisi</th><th class="p-3">Lokasi</th></tr>
+                        </thead>
+                        <tbody id="tb-inventaris" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION SURAT -->
+            <div id="sec-surat" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Permohonan Surat Pengantar</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">No Surat</th><th class="p-3">ID Warga</th><th class="p-3">Jenis Surat</th><th class="p-3">Keperluan</th><th class="p-3">Status</th></tr>
+                        </thead>
+                        <tbody id="tb-surat" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION IURAN -->
+            <div id="sec-iuran" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Daftar Tagihan Iuran</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID</th><th class="p-3">Nama Iuran</th><th class="p-3">Nominal</th><th class="p-3">Periode</th><th class="p-3">Bulan/Tahun</th></tr>
+                        </thead>
+                        <tbody id="tb-iuran" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION PEMBAYARAN -->
+            <div id="sec-pembayaran" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Verifikasi Pembayaran Masuk</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID</th><th class="p-3">ID Warga</th><th class="p-3">Jumlah Bayar</th><th class="p-3">Metode</th><th class="p-3">Status Verifikasi</th></tr>
+                        </thead>
+                        <tbody id="tb-pembayaran" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION KEUANGAN -->
+            <div id="sec-keuangan" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Buku Kas Keuangan RT/RW</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID Kas</th><th class="p-3">Tanggal</th><th class="p-3">Jenis</th><th class="p-3">Kategori</th><th class="p-3">Nominal</th><th class="p-3">Keterangan</th></tr>
+                        </thead>
+                        <tbody id="tb-keuangan" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION PENGUMUMAN -->
+            <div id="sec-pengumuman" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Kelola Pengumuman RT</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID</th><th class="p-3">Judul Pengumuman</th><th class="p-3">Tgl Publish</th><th class="p-3">Konten</th></tr>
+                        </thead>
+                        <tbody id="tb-pengumuman" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION ASPIRASI -->
+            <div id="sec-aspirasi" class="admin-sec hidden space-y-6">
+                <h1 class="text-2xl font-bold text-gray-900">Aspirasi & Laporan Warga</h1>
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase font-bold">
+                            <tr><th class="p-3">ID</th><th class="p-3">Judul Aspirasi</th><th class="p-3">Isi Laporan</th><th class="p-3">Status</th></tr>
+                        </thead>
+                        <tbody id="tb-aspirasi" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= PORTAL WARGA MOBILE VIEW ================= -->
+    <div id="view-warga" class="hidden min-h-screen pb-20">
+        <header class="bg-primary text-white p-4 fixed top-10 w-full z-40 max-w-[600px] left-1/2 -translate-x-1/2 shadow-md flex justify-between items-center">
+            <span class="font-bold text-base">WargaConnect Mobile</span>
+            <span class="text-xs bg-white/20 px-2 py-0.5 rounded font-semibold">RT 02 / RW 08</span>
+        </header>
+
+        <main class="max-w-[600px] mx-auto pt-16 px-4 space-y-4">
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mt-4">
+                <h2 class="font-bold text-sm text-gray-800">Halo, Hendra Gunawan!</h2>
+                <p class="text-xs text-gray-500">Jl. Dahlia No. 14, RT 02 / RW 08</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
+                <div class="bg-white p-3 rounded-xl border text-primary">📜 Surat RT</div>
+                <div class="bg-white p-3 rounded-xl border text-green-700">💳 Bayar Iuran</div>
+                <div class="bg-white p-3 rounded-xl border text-amber-700">💬 Aspirasi</div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-2">
+                <h3 class="font-bold text-sm text-gray-800">Daftar RT di RW 08</h3>
+                <div id="warga-rt-list" class="space-y-2 text-xs"></div>
+            </div>
+        </main>
+    </div>
+
+</div>
+
+<!-- DATA STORE & LOGIC (CLIENT SIDE FOR GITHUB PAGES) -->
+<script>
+    const INITIAL_DB = {
+        rt: [
+            { id_rt: 1, nomor_rt: '001', rw: '08', kelurahan: 'Sukamaju', kecamatan: 'Cilodong' },
+            { id_rt: 2, nomor_rt: '002', rw: '08', kelurahan: 'Sukamaju', kecamatan: 'Cilodong' },
+            { id_rt: 3, nomor_rt: '003', rw: '08', kelurahan: 'Sukamaju', kecamatan: 'Cilodong' },
+            { id_rt: 4, nomor_rt: '004', rw: '08', kelurahan: 'Sukamaju', kecamatan: 'Cilodong' },
+            { id_rt: 5, nomor_rt: '005', rw: '08', kelurahan: 'Sukamaju', kecamatan: 'Cilodong' },
+            { id_rt: 6, nomor_rt: '006', rw: '08', kelurahan: 'Sukamaju', kecamatan: 'Cilodong' }
+        ],
+        keluarga: [
+            { id_keluarga: 1, id_rt: 1, alamat: 'Jl. Mawar No. 12, RT 01 / RW 08', kode_pos: '16415' },
+            { id_keluarga: 2, id_rt: 2, alamat: 'Jl. Dahlia No. 14, RT 02 / RW 08', kode_pos: '16415' },
+            { id_keluarga: 3, id_rt: 3, alamat: 'Jl. Merpati No. 05, RT 03 / RW 08', kode_pos: '16415' },
+            { id_keluarga: 4, id_rt: 4, alamat: 'Jl. Anggrek No. 22, RT 04 / RW 08', kode_pos: '16415' },
+            { id_keluarga: 5, id_rt: 5, alamat: 'Jl. Melati No. 08, RT 05 / RW 08', kode_pos: '16415' }
+        ],
+        warga: [
+            { id_warga: 1, nama: 'Hendra Gunawan', jenis_kelamin: 'L', no_telepon: '081234567890', username: 'warga', role: 'Warga', status: 'Aktif' },
+            { id_warga: 2, nama: 'Maya Anggraini', jenis_kelamin: 'P', no_telepon: '082198765432', username: 'maya', role: 'Warga', status: 'Aktif' },
+            { id_warga: 3, nama: 'Agus Wicaksono', jenis_kelamin: 'L', no_telepon: '081311223344', username: 'agus', role: 'Ketua RT', status: 'Aktif' },
+            { id_warga: 4, nama: 'Siti Aminah', jenis_kelamin: 'P', no_telepon: '085712345678', username: 'siti', role: 'Warga', status: 'Aktif' },
+            { id_warga: 5, nama: 'Budi Santoso', jenis_kelamin: 'L', no_telepon: '081900112233', username: 'budi', role: 'Warga', status: 'Aktif' }
+        ],
+        kegiatan: [
+            { id_kegiatan: 1, nama_kegiatan: 'Kerja Bakti Bulanan RT 03', tanggal: '2024-10-12 07:00', lokasi: 'Jl. Merpati', keterangan: 'Wajib bawa sapu & cangkul' },
+            { id_kegiatan: 2, nama_kegiatan: 'Posyandu Balita & Lansia', tanggal: '2024-10-15 08:00', lokasi: 'Balai Warga RT 02', keterangan: 'Cek kesehatan rutin' }
+        ],
+        peserta: [
+            { id_peserta: 1, id_kegiatan: 1, id_warga: 1, status: 'hadir' },
+            { id_peserta: 2, id_kegiatan: 1, id_warga: 2, status: 'hadir' }
+        ],
+        inventaris: [
+            { id_inventaris: 1, nama: 'Tenda Hajatan 4x6m', kategori: 'Event', jumlah: 2, kondisi: 'Baik', lokasi: 'Gudang RT 02' },
+            { id_inventaris: 2, nama: 'Kursi Plastik Napolly', kategori: 'Event', jumlah: 50, kondisi: 'Baik', lokasi: 'Gudang RT 03' }
+        ],
+        surat: [
+            { no_surat: '045/SKD/RT02/V/2024', id_warga: 1, jenis_surat: 'Keterangan Domisili', keperluan: 'KTP Luar Kota', status: 'Selesai (TTE)' },
+            { no_surat: '044/SKU/RT04/V/2024', id_warga: 2, jenis_surat: 'Keterangan Usaha (SKU)', keperluan: 'KUR BRI', status: 'Diproses' }
+        ],
+        iuran: [
+            { id_iuran: 1, nama: 'Iuran Sampah & Kebersihan', nominal: 30000, periode: 'Bulanan', bulan: 'Oktober 2024' },
+            { id_iuran: 2, nama: 'Iuran Keamanan & Satpam', nominal: 45000, periode: 'Bulanan', bulan: 'Oktober 2024' }
+        ],
+        pembayaran: [
+            { id_pembayaran: 1, id_warga: 1, jumlah: 30000, metode: 'Transfer BCA', status: 'Lunas' }
+        ],
+        keuangan: [
+            { id_keuangan: 1, tanggal: '2024-10-01', jenis: 'pemasukan', kategori: 'iuran', nominal: 750000, keterangan: 'Iuran Kebersihan 25 KK' },
+            { id_keuangan: 2, tanggal: '2024-10-02', jenis: 'pengeluaran', kategori: 'pembelian', nominal: 250000, keterangan: 'BBM Mesin Rumput' }
+        ],
+        pengumuman: [
+            { id_pengumuman: 1, judul: 'Pemadaman Listrik PLN', tanggal: '2024-10-10', konten: 'Pemadaman listrik sementara hari Sabtu jam 09:00 - 12:00 WIB.' }
+        ],
+        aspirasi: [
+            { id_pengaduan: 1, judul: 'Perbaikan Selokan RT 03', isi: 'Selokan mampet saat hujan deras.', status: 'selesai' }
+        ]
+    };
+
+    function getDB() {
+        const stored = localStorage.getItem('wargaconnect_db');
+        return stored ? JSON.parse(stored) : INITIAL_DB;
+    }
+
+    function saveDB(db) {
+        localStorage.setItem('wargaconnect_db', JSON.stringify(db));
+        renderAll();
+    }
+
+    function setPortalMode(mode) {
+        const adminView = document.getElementById('view-admin');
+        const wargaView = document.getElementById('view-warga');
+        const btnAdmin = document.getElementById('btn-mode-admin');
+        const btnWarga = document.getElementById('btn-mode-warga');
+
+        if (mode === 'admin') {
+            adminView.classList.remove('hidden');
+            wargaView.classList.add('hidden');
+            btnAdmin.className = 'px-3 py-1 rounded font-bold bg-primary text-white transition-all';
+            btnWarga.className = 'px-3 py-1 rounded font-bold bg-gray-700 text-gray-300 hover:bg-gray-600 transition-all';
+        } else {
+            wargaView.classList.remove('hidden');
+            adminView.classList.add('hidden');
+            btnWarga.className = 'px-3 py-1 rounded font-bold bg-primary text-white transition-all';
+            btnAdmin.className = 'px-3 py-1 rounded font-bold bg-gray-700 text-gray-300 hover:bg-gray-600 transition-all';
+        }
+    }
+
+    function showAdminSection(secName) {
+        document.querySelectorAll('.admin-sec').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.nav-admin-btn').forEach(el => {
+            el.classList.remove('bg-primary', 'text-white');
+            el.classList.add('text-gray-600', 'hover:bg-gray-100');
+        });
+
+        document.getElementById('sec-' + secName).classList.remove('hidden');
+        const activeNav = document.getElementById('admin-nav-' + secName);
+        if (activeNav) {
+            activeNav.classList.remove('text-gray-600', 'hover:bg-gray-100');
+            activeNav.classList.add('bg-primary', 'text-white');
+        }
+    }
+
+    function addRT(e) {
+        e.preventDefault();
+        const db = getDB();
+        const nomor = document.getElementById('in-rt-nomor').value;
+        const rw = document.getElementById('in-rt-rw').value;
+        const kel = document.getElementById('in-rt-kel').value;
+        const kec = document.getElementById('in-rt-kec').value;
+
+        db.rt.push({ id_rt: db.rt.length + 1, nomor_rt: nomor, rw: rw, kelurahan: kel, kecamatan: kec });
+        saveDB(db);
+        document.getElementById('in-rt-nomor').value = '';
+    }
+
+    function deleteRT(id) {
+        const db = getDB();
+        db.rt = db.rt.filter(item => item.id_rt !== id);
+        saveDB(db);
+    }
+
+    function renderAll() {
+        const db = getDB();
+
+        // Dashboard Counts
+        document.getElementById('dash-count-rt').innerText = db.rt.length + ' RT';
+        document.getElementById('dash-count-kk').innerText = db.keluarga.length + ' KK';
+        document.getElementById('dash-count-warga').innerText = db.warga.length + ' Jiwa';
+
+        // Render RT Table
+        const tbRt = document.getElementById('tb-rt');
+        tbRt.innerHTML = db.rt.map(r => `
+            <tr>
+                <td class="p-3 font-bold text-gray-500">#${r.id_rt}</td>
+                <td class="p-3 font-bold text-primary">RT ${r.nomor_rt}</td>
+                <td class="p-3">RW ${r.rw}</td>
+                <td class="p-3">${r.kelurahan}</td>
+                <td class="p-3">${r.kecamatan}</td>
+                <td class="p-3 text-right">
+                    <button onclick="deleteRT(${r.id_rt})" class="text-red-600 font-bold hover:underline">Hapus</button>
+                </td>
+            </tr>
+        `).join('');
+
+        // Render Keluarga Table
+        document.getElementById('tb-keluarga').innerHTML = db.keluarga.map(k => `
+            <tr><td class="p-3">#KK-${k.id_keluarga}</td><td class="p-3">RT ${k.id_rt}</td><td class="p-3">${k.alamat}</td><td class="p-3">${k.kode_pos}</td></tr>
+        `).join('');
+
+        // Render Warga Table
+        document.getElementById('tb-warga').innerHTML = db.warga.map(w => `
+            <tr><td class="p-3">#W-${w.id_warga}</td><td class="p-3 font-bold">${w.nama}</td><td class="p-3">${w.jenis_kelamin}</td><td class="p-3">${w.no_telepon}</td><td class="p-3 font-semibold text-primary">${w.username}</td><td class="p-3">${w.role}</td><td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold">${w.status}</span></td></tr>
+        `).join('');
+
+        // Render Kegiatan Table
+        document.getElementById('tb-kegiatan').innerHTML = db.kegiatan.map(k => `
+            <tr><td class="p-3">#KGT-${k.id_kegiatan}</td><td class="p-3 font-bold">${k.nama_kegiatan}</td><td class="p-3">${k.tanggal}</td><td class="p-3">${k.lokasi}</td><td class="p-3">${k.keterangan}</td></tr>
+        `).join('');
+
+        // Render Peserta Table
+        document.getElementById('tb-peserta').innerHTML = db.peserta.map(p => `
+            <tr><td class="p-3">#P-${p.id_peserta}</td><td class="p-3">Kegiatan #${p.id_kegiatan}</td><td class="p-3">Warga #${p.id_warga}</td><td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold">${p.status}</span></td></tr>
+        `).join('');
+
+        // Render Inventaris Table
+        document.getElementById('tb-inventaris').innerHTML = db.inventaris.map(i => `
+            <tr><td class="p-3">#INV-${i.id_inventaris}</td><td class="p-3 font-bold">${i.nama}</td><td class="p-3">${i.kategori}</td><td class="p-3 font-bold">${i.jumlah} unit</td><td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold">${i.kondisi}</span></td><td class="p-3">${i.lokasi}</td></tr>
+        `).join('');
+
+        // Render Surat Table
+        document.getElementById('tb-surat').innerHTML = db.surat.map(s => `
+            <tr><td class="p-3 font-bold text-primary">${s.no_surat}</td><td class="p-3">Warga #${s.id_warga}</td><td class="p-3 font-bold">${s.jenis_surat}</td><td class="p-3">${s.keperluan}</td><td class="p-3"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-bold">${s.status}</span></td></tr>
+        `).join('');
+
+        // Render Iuran Table
+        document.getElementById('tb-iuran').innerHTML = db.iuran.map(i => `
+            <tr><td class="p-3">#IRN-${i.id_iuran}</td><td class="p-3 font-bold">${i.nama}</td><td class="p-3 font-bold text-green-700">Rp ${i.nominal.toLocaleString()}</td><td class="p-3">${i.periode}</td><td class="p-3">${i.bulan}</td></tr>
+        `).join('');
+
+        // Render Pembayaran Table
+        document.getElementById('tb-pembayaran').innerHTML = db.pembayaran.map(p => `
+            <tr><td class="p-3">#BYR-${p.id_pembayaran}</td><td class="p-3">Warga #${p.id_warga}</td><td class="p-3 font-bold text-green-700">Rp ${p.jumlah.toLocaleString()}</td><td class="p-3">${p.metode}</td><td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold">${p.status}</span></td></tr>
+        `).join('');
+
+        // Render Keuangan Table
+        document.getElementById('tb-keuangan').innerHTML = db.keuangan.map(k => `
+            <tr><td class="p-3">#KAS-${k.id_keuangan}</td><td class="p-3">${k.tanggal}</td><td class="p-3"><span class="px-2 py-0.5 ${k.jenis === 'pemasukan' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} rounded font-bold">${k.jenis.toUpperCase()}</span></td><td class="p-3">${k.kategori}</td><td class="p-3 font-bold">Rp ${k.nominal.toLocaleString()}</td><td class="p-3">${k.keterangan}</td></tr>
+        `).join('');
+
+        // Render Pengumuman Table
+        document.getElementById('tb-pengumuman').innerHTML = db.pengumuman.map(p => `
+            <tr><td class="p-3">#PGM-${p.id_pengumuman}</td><td class="p-3 font-bold">${p.judul}</td><td class="p-3">${p.tanggal}</td><td class="p-3">${p.konten}</td></tr>
+        `).join('');
+
+        // Render Aspirasi Table
+        document.getElementById('tb-aspirasi').innerHTML = db.aspirasi.map(a => `
+            <tr><td class="p-3">#ASP-${a.id_pengaduan}</td><td class="p-3 font-bold">${a.judul}</td><td class="p-3">${a.isi}</td><td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold">${a.status.toUpperCase()}</span></td></tr>
+        `).join('');
+
+        // Warga RT list
+        document.getElementById('warga-rt-list').innerHTML = db.rt.map(r => `
+            <div class="p-3 bg-gray-50 border rounded-lg flex justify-between items-center">
+                <div>
+                    <span class="font-bold text-primary">RT ${r.nomor_rt} / RW ${r.rw}</span>
+                    <p class="text-gray-500 text-[10px]">Kel. ${r.kelurahan}, Kec. ${r.kecamatan}</p>
+                </div>
+                <span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-1 rounded">Aktif</span>
+            </div>
+        `).join('');
+    }
+
+    // Initial load
+    renderAll();
+</script>
+</body>
+</html>

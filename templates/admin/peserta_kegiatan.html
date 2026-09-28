@@ -1,0 +1,96 @@
+{% extends "admin/layout_admin.html" %}
+{% block title %}Peserta Kegiatan & Absensi - SIM RT/RW{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">Peserta Kegiatan & Absensi</h1>
+        <p class="text-xs text-gray-500">Kelola keikutsertaan warga dan status presensi (Hadir, Izin, Alfa).</p>
+    </div>
+
+    <!-- Form Add Peserta -->
+    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm">
+        <h2 class="font-bold text-sm text-gray-800 mb-3">+ Catat Kehadiran / Pendaftaran Peserta</h2>
+        <form action="/admin/peserta-kegiatan" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+            <input type="hidden" name="action" value="add"/>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Pilih Kegiatan</label>
+                <select name="id_kegiatan" required class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    {% for k in kegiatan_list %}
+                    <option value="{{ k.id_kegiatan }}">{{ k.nama_kegiatan }} ({{ k.tanggal_kegiatan }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Pilih Warga</label>
+                <select name="id_warga" required class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    {% for w in warga_list %}
+                    <option value="{{ w.id_warga }}">{{ w.nama }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="font-semibold text-gray-700 block mb-1">Status Kehadiran</label>
+                <select name="status_kehadiran" class="w-full h-9 rounded-lg border border-gray-300 px-3 outline-none focus:border-primary">
+                    <option value="hadir">Hadir</option>
+                    <option value="izin">Izin</option>
+                    <option value="alfa">Alfa</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="w-full h-9 bg-primary text-white rounded-lg font-semibold hover:bg-primary-container">Simpan Presensi</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Peserta -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table class="w-full text-left text-xs">
+            <thead>
+                <tr class="bg-gray-50 text-gray-500 uppercase font-semibold">
+                    <th class="py-3 px-4">ID Peserta</th>
+                    <th class="py-3 px-4">Nama Warga</th>
+                    <th class="py-3 px-4">Wilayah RT</th>
+                    <th class="py-3 px-4">Kegiatan</th>
+                    <th class="py-3 px-4">Waktu Kegiatan</th>
+                    <th class="py-3 px-4">Status Kehadiran</th>
+                    <th class="py-3 px-4 text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for p in peserta_list %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-3 px-4 font-bold text-gray-700">#P-{{ p.id_peserta }}</td>
+                    <td class="py-3 px-4 font-bold text-gray-900">{{ p.nama_warga }}</td>
+                    <td class="py-3 px-4 text-primary font-semibold">RT {{ p.nomor_rt }}</td>
+                    <td class="py-3 px-4 font-medium">{{ p.nama_kegiatan }}</td>
+                    <td class="py-3 px-4 text-gray-500">{{ p.tanggal_kegiatan }}</td>
+                    <td class="py-3 px-4">
+                        <form action="/admin/peserta-kegiatan" method="POST" class="inline-flex items-center gap-1">
+                            <input type="hidden" name="action" value="update_status"/>
+                            <input type="hidden" name="id_peserta" value="{{ p.id_peserta }}"/>
+                            <select name="status_kehadiran" onchange="this.form.submit()" class="h-7 rounded border border-gray-300 px-2 text-xs font-bold 
+                                {% if p.status_kehadiran == 'hadir' %}bg-green-100 text-green-800
+                                {% elif p.status_kehadiran == 'izin' %}bg-amber-100 text-amber-800
+                                {% else %}bg-red-100 text-red-800{% endif %}">
+                                <option value="hadir" {% if p.status_kehadiran == 'hadir' %}selected{% endif %}>Hadir</option>
+                                <option value="izin" {% if p.status_kehadiran == 'izin' %}selected{% endif %}>Izin</option>
+                                <option value="alfa" {% if p.status_kehadiran == 'alfa' %}selected{% endif %}>Alfa</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td class="py-3 px-4 text-right">
+                        <form action="/admin/peserta-kegiatan" method="POST" onsubmit="return confirm('Hapus presensi ini?');" class="inline">
+                            <input type="hidden" name="action" value="delete"/>
+                            <input type="hidden" name="id_peserta" value="{{ p.id_peserta }}"/>
+                            <button type="submit" class="text-red-600 font-semibold hover:underline">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center py-6 text-gray-400">Belum ada peserta terdata.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

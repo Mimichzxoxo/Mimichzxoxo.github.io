@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}WargaConnect{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-background": "#191c1d",
+                        "surface": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "background": "#f8f9fa",
+                        "primary-container": "#004b87",
+                        "primary": "#003461",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#424750",
+                        "outline-variant": "#c2c6d1",
+                        "secondary": "#1b6d24"
+                    },
+                    fontFamily: {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-[80px]">
+
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant flex items-center justify-between px-5 h-14 max-w-[600px] mx-auto left-0 right-0 shadow-sm">
+    <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm">
+            {{ user.nama[0] if user else 'W' }}
+        </div>
+        <span class="font-bold text-lg text-primary">WargaConnect</span>
+    </div>
+    <div class="flex items-center gap-3">
+        <span class="text-xs text-gray-500 font-medium">RT {{ user.nomor_rt if user else '01' }} / RW {{ user.rw if user else '08' }}</span>
+        <a href="/logout" title="Keluar" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors text-red-600">
+            <span class="material-symbols-outlined text-[20px]">logout</span>
+        </a>
+    </div>
+</header>
+
+<main class="mt-14 w-full max-w-[600px] mx-auto px-5 py-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-4 p-3 rounded-xl text-xs font-semibold {% if category == 'error' %}bg-red-100 text-red-800 border border-red-300{% else %}bg-green-100 text-green-800 border border-green-300{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<!-- BottomNavBar Mobile -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface border-t border-outline-variant flex justify-around items-center h-[64px] px-2 max-w-[600px] mx-auto left-0 right-0">
+    <a href="/warga/beranda" class="flex flex-col items-center justify-center text-xs font-semibold p-2 w-16 {% if request.path == '/warga/beranda' or request.path == '/' %}text-primary font-bold{% else %}text-gray-500 hover:text-gray-800{% endif %}">
+        <span class="material-symbols-outlined text-[22px]">home</span>
+        <span class="text-[10px]">Beranda</span>
+    </a>
+    <a href="/warga/rt" class="flex flex-col items-center justify-center text-xs font-semibold p-1 w-14 {% if request.path == '/warga/rt' %}text-primary font-bold{% else %}text-gray-500 hover:text-gray-800{% endif %}">
+        <span class="material-symbols-outlined text-[20px]">location_city</span>
+        <span class="text-[10px]">Info RT</span>
+    </a>
+    <a href="/warga/pengumuman" class="flex flex-col items-center justify-center text-xs font-semibold p-1 w-14 {% if request.path == '/warga/pengumuman' %}text-primary font-bold{% else %}text-gray-500 hover:text-gray-800{% endif %}">
+        <span class="material-symbols-outlined text-[20px]">campaign</span>
+        <span class="text-[10px]">Info</span>
+    </a>
+
+    <a href="/warga/kegiatan" class="flex flex-col items-center justify-center text-xs font-semibold p-2 w-16 {% if request.path == '/warga/kegiatan' %}text-primary font-bold{% else %}text-gray-500 hover:text-gray-800{% endif %}">
+        <span class="material-symbols-outlined text-[22px]">event</span>
+        <span class="text-[10px]">Kegiatan</span>
+    </a>
+    <a href="/warga/surat" class="flex flex-col items-center justify-center text-xs font-semibold p-2 w-16 {% if request.path == '/warga/surat' %}text-primary font-bold{% else %}text-gray-500 hover:text-gray-800{% endif %}">
+        <span class="material-symbols-outlined text-[22px]">description</span>
+        <span class="text-[10px]">Surat</span>
+    </a>
+    <a href="/warga/iuran" class="flex flex-col items-center justify-center text-xs font-semibold p-2 w-16 {% if request.path == '/warga/iuran' %}text-primary font-bold{% else %}text-gray-500 hover:text-gray-800{% endif %}">
+        <span class="material-symbols-outlined text-[22px]">payments</span>
+        <span class="text-[10px]">Iuran</span>
+    </a>
+    <a href="/warga/aspirasi" class="flex flex-col items-center justify-center text-xs font-semibold p-2 w-16 {% if request.path == '/warga/aspirasi' %}text-primary font-bold{% else %}text-gray-500 hover:text-gray-800{% endif %}">
+        <span class="material-symbols-outlined text-[22px]">forum</span>
+        <span class="text-[10px]">Aspirasi</span>
+    </a>
+</nav>
+</body>
+</html>

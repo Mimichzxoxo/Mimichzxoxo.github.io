@@ -1,0 +1,49 @@
+{% extends "warga/layout_warga.html" %}
+{% block title %}Profil Warga - WargaConnect{% endblock %}
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm text-center">
+        <div class="w-16 h-16 rounded-full bg-primary text-white text-2xl font-bold flex items-center justify-center mx-auto mb-3">
+            {{ user.nama[0] if user else 'W' }}
+        </div>
+        <h1 class="text-xl font-bold text-gray-900">{{ user.nama }}</h1>
+        <p class="text-xs text-gray-500 font-medium mt-0.5">Role: {{ user.role }} (Status: {{ user.status_warga }})</p>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm space-y-3">
+        <h2 class="font-bold text-sm text-gray-800 border-b pb-2">Informasi Kependudukan</h2>
+        <div class="text-xs space-y-2 text-gray-700">
+            <div class="flex justify-between">
+                <span class="text-gray-500">Username / No HP:</span>
+                <span class="font-semibold">{{ user.email_username }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">No Telepon:</span>
+                <span class="font-semibold">{{ user.no_telepon }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Jenis Kelamin:</span>
+                <span class="font-semibold">{{ 'Laki-laki' if user.jenis_kelamin == 'L' else 'Perempuan' }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Wilayah RT / RW:</span>
+                <span class="font-semibold">RT {{ user.nomor_rt }} / RW {{ user.rw }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Kelurahan / Kecamatan:</span>
+                <span class="font-semibold">{{ user.kelurahan }}, {{ user.kecamatan }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Alamat Domisili:</span>
+                <span class="font-semibold text-right max-w-[200px]">{{ user.alamat }} (Kode Pos {{ user.kode_pos }})</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="pt-2">
+        <a href="/logout" class="w-full h-11 bg-red-50 text-red-600 border border-red-200 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 hover:bg-red-100">
+            <span class="material-symbols-outlined text-[18px]">logout</span> Keluar Sesi
+        </a>
+    </div>
+</div>
+{% endblock %}
