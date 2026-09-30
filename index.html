@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Smart RT - Sistem Informasi Manajemen RT/RW Digital</title>
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#003461",
+                        "primary-container": "#004b87",
+                        "on-primary": "#ffffff",
+                        surface: "#f8f9fa",
+                        "surface-container": "#eff4ff",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#424750",
+                        outline: "#727781",
+                        "outline-variant": "#c2c6d1",
+                        error: "#ba1a1a"
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9fa; }
+        .hidden-view { display: none !important; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen">
+
+    <!-- ==================== VIEW 1: LOGIN PAGE ==================== -->
+    <div id="view-login" class="min-h-screen flex items-center justify-center p-4">
+        <main class="w-full max-w-[440px] bg-white rounded-2xl border border-outline-variant p-6 md:p-8 flex flex-col gap-6 shadow-md">
+            <div class="w-full h-[160px] rounded-xl relative overflow-hidden flex items-center justify-center" style="background: linear-gradient(135deg, #003461 0%, #004b87 100%);">
+                <div class="text-center text-white p-4">
+                    <span class="material-symbols-outlined text-5xl mb-1">roofing</span>
+                    <h2 class="text-2xl font-bold tracking-tight">Smart RT</h2>
+                    <p class="text-xs text-blue-200">GitHub Edition • SIM RT/RW Digital</p>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <h1 class="text-xl font-bold text-on-surface">Selamat Datang di Smart RT</h1>
+                <p class="text-xs text-on-surface-variant mt-1">Masuk untuk mengakses layanan RT/RW digital Anda</p>
+            </div>
+
+            <div id="login-error" class="hidden p-3 bg-red-100 text-red-800 rounded-lg text-xs font-semibold flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">error</span>
+                <span id="login-error-text">Username atau password salah.</span>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="flex flex-col gap-4">
+                <div>
+                    <label class="text-xs font-semibold text-on-surface block mb-1">Username / No HP</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">account_circle</span>
+                        <input id="input-username" type="text" placeholder="Contoh: budi / admin_rt / superadmin" class="w-full h-11 pl-10 pr-3 border border-outline rounded-xl text-sm focus:outline-none focus:border-primary" required />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-on-surface block mb-1">Kata Sandi</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">lock</span>
+                        <input id="input-password" type="password" placeholder="Masukkan kata sandi Anda" class="w-full h-11 pl-10 pr-3 border border-outline rounded-xl text-sm focus:outline-none focus:border-primary" required />
+                    </div>
+                </div>
+
+                <div class="p-3 bg-blue-50 rounded-xl text-xs space-y-2 text-on-surface-variant">
+                    <p class="font-bold text-primary">Akses Cepat Demo:</p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" onclick="fillLogin('budi', 'warga123')" class="px-2 py-1 bg-white rounded border hover:bg-primary hover:text-white text-[11px] font-semibold transition">Warga: budi</button>
+                        <button type="button" onclick="fillLogin('admin_rt', 'admin123')" class="px-2 py-1 bg-white rounded border hover:bg-primary hover:text-white text-[11px] font-semibold transition">Admin RT: admin_rt</button>
+                        <button type="button" onclick="fillLogin('superadmin', 'admin123')" class="px-2 py-1 bg-white rounded border hover:bg-primary hover:text-white text-[11px] font-semibold transition">Super Admin</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full h-11 bg-primary hover:bg-primary-container text-white font-bold rounded-xl transition-colors shadow">
+                    Masuk Ke Sistem
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <!-- ==================== VIEW 2: WARGA PORTAL ==================== -->
+    <div id="view-warga" class="hidden-view pb-20">
+        <!-- Top App Bar -->
+        <header class="fixed top-0 w-full z-40 bg-white border-b border-outline-variant">
+            <div class="flex items-center justify-between px-4 h-14 w-full max-w-[600px] mx-auto">
+                <div class="flex items-center gap-3">
+                    <div id="warga-avatar" class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">W</div>
+                    <span class="text-lg text-primary font-bold">Smart RT</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="warga-name" class="text-xs text-on-surface-variant font-semibold">Budi Santoso</span>
+                    <button onclick="logout()" class="w-8 h-8 flex items-center justify-center rounded-full text-red-600 hover:bg-red-50" title="Keluar">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="w-full max-w-[600px] mx-auto pt-16 px-4">
+            <!-- Tab Pengumuman -->
+            <div id="warga-tab-pengumuman" class="warga-tab-content space-y-4">
+                <div class="my-2">
+                    <h2 class="text-xl font-bold text-on-surface">Pengumuman RT 001 / RW 005</h2>
+                    <p class="text-xs text-on-surface-variant">Informasi resmi pengurus RT/RW digital</p>
+                </div>
+                <div id="list-pengumuman" class="space-y-3"></div>
+            </div>
+
+            <!-- Tab Kegiatan -->
+            <div id="warga-tab-kegiatan" class="warga-tab-content hidden-view space-y-4">
+                <div class="my-2">
+                    <h2 class="text-xl font-bold text-on-surface">Agenda Kegiatan RT</h2>
+                    <p class="text-xs text-on-surface-variant">Ikuti kegiatan kerja bakti & rapat warga</p>
+                </div>
+                <div id="list-kegiatan" class="space-y-3"></div>
+            </div>
+
+            <!-- Tab Iuran -->
+            <div id="warga-tab-iuran" class="warga-tab-content hidden-view space-y-4">
+                <div class="my-2">
+                    <h2 class="text-xl font-bold text-on-surface">Iuran & Kas RT</h2>
+                    <p class="text-xs text-on-surface-variant">Bayar tagihan iuran kebersihan & keamanan</p>
+                </div>
+                <div class="bg-white border rounded-xl p-4 shadow-sm space-y-3">
+                    <h3 class="font-bold text-sm">Bayar Iuran Bulanan</h3>
+                    <div class="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
+                        <div>
+                            <span class="font-bold text-sm block">Iuran Kebersihan & Keamanan</span>
+                            <span class="text-xs text-gray-600">Nominal: Rp 50.000 / bulan</span>
+                        </div>
+                        <button onclick="bayarIuran()" class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container">Bayar Now</button>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-bold text-sm">Riwayat Pembayaran Saya</h3>
+                    <div id="list-iuran-warga" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Tab Surat -->
+            <div id="warga-tab-surat" class="warga-tab-content hidden-view space-y-4">
+                <div class="my-2">
+                    <h2 class="text-xl font-bold text-on-surface">Pengajuan Surat Pengantar</h2>
+                    <p class="text-xs text-on-surface-variant">Ajukan surat pengantar RT secara online</p>
+                </div>
+                <div class="bg-white border rounded-xl p-4 shadow-sm space-y-3">
+                    <h3 class="font-bold text-sm">Form Buat Surat Baru</h3>
+                    <form onsubmit="submitSurat(event)" class="space-y-3">
+                        <div>
+                            <label class="text-xs font-semibold block mb-1">Jenis Surat Pengantar</label>
+                            <select id="surat-jenis" class="w-full h-10 border rounded-lg px-3 text-xs" required>
+                                <option value="Surat Pengantar KTP / KK">Surat Pengantar KTP / KK</option>
+                                <option value="Surat Keterangan Domisili">Surat Keterangan Domisili</option>
+                                <option value="Surat Keterangan Usaha (SKU)">Surat Keterangan Usaha (SKU)</option>
+                                <option value="Surat Keterangan Tidak Mampu (SKTM)">Surat Keterangan Tidak Mampu (SKTM)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold block mb-1">Keperluan / Alasan</label>
+                            <input id="surat-keperluan" type="text" placeholder="Contoh: Pembuatan KTP Baru" class="w-full h-10 border rounded-lg px-3 text-xs" required />
+                        </div>
+                        <button type="submit" class="w-full h-10 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container">Kirim Pengajuan Surat</button>
+                    </form>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-bold text-sm">Riwayat Surat Saya</h3>
+                    <div id="list-surat-warga" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Tab Aspirasi -->
+            <div id="warga-tab-aspirasi" class="warga-tab-content hidden-view space-y-4">
+                <div class="my-2">
+                    <h2 class="text-xl font-bold text-on-surface">Aspirasi & Pengaduan</h2>
+                    <p class="text-xs text-on-surface-variant">Sampaikan saran atau laporan fasilitas RT</p>
+                </div>
+                <div class="bg-white border rounded-xl p-4 shadow-sm space-y-3">
+                    <h3 class="font-bold text-sm">Kirim Aspirasi Baru</h3>
+                    <form onsubmit="submitAspirasi(event)" class="space-y-3">
+                        <div>
+                            <label class="text-xs font-semibold block mb-1">Topik / Masalah</label>
+                            <input id="asp-topik" type="text" placeholder="Contoh: Lampu Jalan Padam di RT 01" class="w-full h-10 border rounded-lg px-3 text-xs" required />
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold block mb-1">Pesan Lengkap</label>
+                            <textarea id="asp-pesan" rows="2" placeholder="Detail keluhan..." class="w-full border rounded-lg p-2 text-xs" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full h-10 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-container">Kirim Aspirasi</button>
+                    </form>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-bold text-sm">Riwayat Aspirasi Saya</h3>
+                    <div id="list-aspirasi-warga" class="space-y-2"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 w-full z-40 bg-white border-t border-outline-variant">
+            <div class="flex justify-around items-center h-16 w-full max-w-[600px] mx-auto">
+                <button onclick="switchWargaTab('pengumuman')" id="nav-pengumuman" class="warga-nav-btn text-primary flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-xl">campaign</span>
+                    <span class="text-[10px] font-bold">Info</span>
+                </button>
+                <button onclick="switchWargaTab('kegiatan')" id="nav-kegiatan" class="warga-nav-btn text-gray-500 flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-xl">event</span>
+                    <span class="text-[10px] font-bold">Kegiatan</span>
+                </button>
+                <button onclick="switchWargaTab('iuran')" id="nav-iuran" class="warga-nav-btn text-gray-500 flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-xl">payments</span>
+                    <span class="text-[10px] font-bold">Iuran</span>
+                </button>
+                <button onclick="switchWargaTab('surat')" id="nav-surat" class="warga-nav-btn text-gray-500 flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-xl">description</span>
+                    <span class="text-[10px] font-bold">Surat</span>
+                </button>
+                <button onclick="switchWargaTab('aspirasi')" id="nav-aspirasi" class="warga-nav-btn text-gray-500 flex flex-col items-center justify-center">
+                    <span class="material-symbols-outlined text-xl">forum</span>
+                    <span class="text-[10px] font-bold">Aspirasi</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ==================== VIEW 3: ADMIN PORTAL ==================== -->
+    <div id="view-admin" class="hidden-view flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-outline-variant flex flex-col justify-between p-4 sticky top-0 h-screen">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3 px-2 py-3 border-b border-outline-variant">
+                    <span class="material-symbols-outlined text-primary text-3xl">roofing</span>
+                    <div>
+                        <h1 class="font-bold text-lg text-primary leading-none">Smart RT</h1>
+                        <span class="text-[10px] text-gray-500 uppercase font-bold">Admin Panel</span>
+                    </div>
+                </div>
+                <nav class="space-y-1">
+                    <button onclick="switchAdminTab('dash')" id="adnav-dash" class="admin-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-primary text-white">
+                        <span class="material-symbols-outlined text-lg">dashboard</span> Dashboard
+                    </button>
+                    <button onclick="switchAdminTab('warga')" id="adnav-warga" class="admin-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100">
+                        <span class="material-symbols-outlined text-lg">group</span> Data Warga
+                    </button>
+                    <button onclick="switchAdminTab('surat')" id="adnav-surat" class="admin-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100">
+                        <span class="material-symbols-outlined text-lg">description</span> Verifikasi Surat
+                    </button>
+                    <button onclick="switchAdminTab('iuran')" id="adnav-iuran" class="admin-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100">
+                        <span class="material-symbols-outlined text-lg">payments</span> Verifikasi Iuran
+                    </button>
+                    <button onclick="switchAdminTab('keuangan')" id="adnav-keuangan" class="admin-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100">
+                        <span class="material-symbols-outlined text-lg">account_balance_wallet</span> Kas Keuangan
+                    </button>
+                    <button id="adnav-superadmin" onclick="switchAdminTab('superadmin')" class="hidden admin-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100">
+                        <span class="material-symbols-outlined text-lg">admin_panel_settings</span> Master RT/RW
+                    </button>
+                </nav>
+            </div>
+            <div class="border-t pt-3 flex items-center justify-between">
+                <div class="text-xs">
+                    <p id="admin-user-name" class="font-bold text-on-surface">Pak Bambang</p>
+                    <p id="admin-user-role" class="text-gray-500 uppercase text-[10px]">Admin RT</p>
+                </div>
+                <button onclick="logout()" class="text-red-600 hover:bg-red-50 p-1.5 rounded-lg" title="Keluar">
+                    <span class="material-symbols-outlined text-lg">logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Admin Main Content -->
+        <main class="flex-1 p-6 space-y-6">
+            <!-- Header Top Bar -->
+            <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-outline-variant shadow-sm">
+                <div>
+                    <h2 id="admin-page-title" class="text-xl font-bold text-on-surface">Dashboard Admin RT</h2>
+                    <p class="text-xs text-gray-500">RT 001 / RW 005 - Kel. Mekar, Kec. Cibinong</p>
+                </div>
+                <button onclick="switchWargaMode()" class="text-xs bg-blue-50 text-primary font-bold px-3 py-2 rounded-lg hover:bg-primary hover:text-white transition">
+                    Mode Warga 📱
+                </button>
+            </div>
+
+            <!-- Admin Section: Dashboard -->
+            <div id="admin-sec-dash" class="admin-sec space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-100 text-blue-800 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined">group</span></div>
+                        <div><span class="text-xs text-gray-500 block">Total Warga</span><span id="stat-warga" class="text-xl font-bold">128</span></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-100 text-indigo-800 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined">home</span></div>
+                        <div><span class="text-xs text-gray-500 block">Kepala Keluarga</span><span id="stat-kk" class="text-xl font-bold">42</span></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-3">
+                        <div class="w-10 h-10 bg-yellow-100 text-yellow-800 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined">mark_email_unread</span></div>
+                        <div><span class="text-xs text-gray-500 block">Surat Pending</span><span id="stat-surat" class="text-xl font-bold">2</span></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border shadow-sm flex items-center gap-3">
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-800 rounded-lg flex items-center justify-center"><span class="material-symbols-outlined">payments</span></div>
+                        <div><span class="text-xs text-gray-500 block">Verifikasi Iuran</span><span id="stat-iuran" class="text-xl font-bold">1</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border p-4 space-y-3">
+                    <h3 class="font-bold text-sm">Pengajuan Surat Terbaru</h3>
+                    <div id="list-surat-admin-dash" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Admin Section: Warga -->
+            <div id="admin-sec-warga" class="admin-sec hidden-view space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-md">Daftar Data Kependudukan Warga</h3>
+                    <button onclick="tambahWargaModal()" class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg">+ Tambah Warga</button>
+                </div>
+                <div class="bg-white rounded-xl border overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase">
+                            <tr><th class="p-3">Nama</th><th class="p-3">No Telp</th><th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">Status</th></tr>
+                        </thead>
+                        <tbody id="table-warga-body" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Admin Section: Surat -->
+            <div id="admin-sec-surat" class="admin-sec hidden-view space-y-4">
+                <h3 class="font-bold text-md">Verifikasi Pengajuan Surat Warga</h3>
+                <div class="bg-white rounded-xl border overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase">
+                            <tr><th class="p-3">Pemohon</th><th class="p-3">Jenis Surat</th><th class="p-3">Keperluan</th><th class="p-3">Status</th><th class="p-3 text-right">Aksi</th></tr>
+                        </thead>
+                        <tbody id="table-surat-body" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Admin Section: Iuran -->
+            <div id="admin-sec-iuran" class="admin-sec hidden-view space-y-4">
+                <h3 class="font-bold text-md">Verifikasi Pembayaran Iuran</h3>
+                <div class="bg-white rounded-xl border overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-500 uppercase">
+                            <tr><th class="p-3">Warga</th><th class="p-3">Iuran</th><th class="p-3">Nominal</th><th class="p-3">Status</th><th class="p-3 text-right">Aksi</th></tr>
+                        </thead>
+                        <tbody id="table-iuran-body" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Admin Section: Keuangan -->
+            <div id="admin-sec-keuangan" class="admin-sec hidden-view space-y-4">
+                <h3 class="font-bold text-md">Buku Kas & Transaksi RT</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-white p-4 border rounded-xl"><span class="text-xs text-gray-500 block">Total Masuk</span><span class="text-lg font-bold text-green-600">Rp 1.500.000</span></div>
+                    <div class="bg-white p-4 border rounded-xl"><span class="text-xs text-gray-500 block">Total Keluar</span><span class="text-lg font-bold text-red-600">Rp 350.000</span></div>
+                    <div class="bg-white p-4 border rounded-xl"><span class="text-xs text-gray-500 block">Saldo RT</span><span class="text-lg font-bold text-primary">Rp 1.150.000</span></div>
+                </div>
+            </div>
+
+            <!-- Admin Section: Super Admin -->
+            <div id="admin-sec-superadmin" class="admin-sec hidden-view space-y-4">
+                <h3 class="font-bold text-md text-purple-900">Master Data RT/RW & Wilayah</h3>
+                <div class="bg-white rounded-xl border p-4 space-y-2">
+                    <p class="text-xs">RT 001 / RW 005 - Kelurahan Mekar, Kecamatan Cibinong</p>
+                    <p class="text-xs text-gray-500">Status Sistem: Single Master RT Active</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Initial Demo State
+        const defaultData = {
+            warga: [
+                { id: 1, nama: "Budi Santoso", telp: "08123456789", user: "budi", pwd: "warga123", role: "warga", status: "Tetap" },
+                { id: 2, nama: "Pak Bambang (Admin RT)", telp: "08987654321", user: "admin_rt", pwd: "admin123", role: "admin_rt", status: "Tetap" },
+                { id: 3, nama: "Super Admin System", telp: "08111111111", user: "superadmin", pwd: "admin123", role: "super_admin", status: "Tetap" }
+            ],
+            pengumuman: [
+                { id: 1, judul: "Kerja Bakti Massal Kebersihan Selokan", tgl: "30 Sep 2026", isi: "Dihimbau kepada seluruh warga RT 01/RW 05 untuk mengikuti kerja bakti pembersihan selokan pada Minggu pagi jam 07:00 WIB." },
+                { id: 2, judul: "Pembayaran Iuran Bulanan Oktober", tgl: "28 Sep 2026", isi: "Iuran rutin RT sebesar Rp 50.000 sudah dapat disetorkan melalui portal warga Smart RT ini." }
+            ],
+            kegiatan: [
+                { id: 1, nama: "Kerja Bakti Lingkungan", tgl: "05 Okt 2026 • 07:00 WIB", lokasi: "Pos Ronda RT 01", pes: 12 },
+                { id: 2, nama: "Rapat Bulanan Warga RT", tgl: "10 Okt 2026 • 19:30 WIB", lokasi: "Balai Warga", pes: 8 }
+            ],
+            surat: [
+                { id: 101, pemohon: "Budi Santoso", jenis: "Surat Keterangan Domisili", keperluan: "Persyaratan Lamaran Kerja", status: "Disetujui" },
+                { id: 102, pemohon: "Siti Rahma", jenis: "Surat Pengantar KTP", keperluan: "Perpanjangan KTP", status: "Diproses" }
+            ],
+            iuran: [
+                { id: 201, warga: "Budi Santoso", nama: "Iuran Kebersihan Sept 2026", jml: 50000, status: "Disetujui" }
+            ]
+        };
+
+        let appData = JSON.parse(localStorage.getItem('smart_rt_data')) || defaultData;
+        let currentUser = null;
+
+        function saveData() {
+            localStorage.setItem('smart_rt_data', JSON.stringify(appData));
+        }
+
+        function fillLogin(u, p) {
+            document.getElementById('input-username').value = u;
+            document.getElementById('input-password').value = p;
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('input-username').value.trim();
+            const p = document.getElementById('input-password').value.trim();
+
+            const found = appData.warga.find(w => w.user === u && w.pwd === p);
+
+            if (found) {
+                currentUser = found;
+                document.getElementById('login-error').classList.add('hidden');
+                document.getElementById('view-login').classList.add('hidden-view');
+
+                if (found.role === 'admin_rt' || found.role === 'super_admin') {
+                    showAdminPortal();
+                } else {
+                    showWargaPortal();
+                }
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('view-warga').classList.add('hidden-view');
+            document.getElementById('view-admin').classList.add('hidden-view');
+            document.getElementById('view-login').classList.remove('hidden-view');
+        }
+
+        function showWargaPortal() {
+            document.getElementById('view-warga').classList.remove('hidden-view');
+            document.getElementById('warga-name').innerText = currentUser.nama;
+            document.getElementById('warga-avatar').innerText = currentUser.nama[0];
+            renderWargaViews();
+        }
+
+        function switchWargaTab(tab) {
+            document.querySelectorAll('.warga-tab-content').forEach(el => el.classList.add('hidden-view'));
+            document.querySelectorAll('.warga-nav-btn').forEach(el => {
+                el.classList.remove('text-primary');
+                el.classList.add('text-gray-500');
+            });
+
+            document.getElementById(`warga-tab-${tab}`).classList.remove('hidden-view');
+            document.getElementById(`nav-${tab}`).classList.remove('text-gray-500');
+            document.getElementById(`nav-${tab}`).classList.add('text-primary');
+        }
+
+        function renderWargaViews() {
+            // Render Pengumuman
+            const pBox = document.getElementById('list-pengumuman');
+            pBox.innerHTML = appData.pengumuman.map(p => `
+                <div class="bg-white border rounded-xl p-4 shadow-sm space-y-2">
+                    <div class="flex justify-between items-center"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold rounded">📢 RT 01/RW 05</span><span class="text-[11px] text-gray-400">${p.tgl}</span></div>
+                    <h3 class="font-bold text-sm text-on-surface">${p.judul}</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">${p.isi}</p>
+                </div>
+            `).join('');
+
+            // Render Kegiatan
+            const kBox = document.getElementById('list-kegiatan');
+            kBox.innerHTML = appData.kegiatan.map(k => `
+                <div class="bg-white border rounded-xl p-4 shadow-sm space-y-2">
+                    <div class="flex justify-between items-center"><span class="text-xs text-gray-500">📅 ${k.tgl}</span><span class="text-xs text-gray-500">📍 ${k.lokasi}</span></div>
+                    <h3 class="font-bold text-sm">${k.nama}</h3>
+                    <button onclick="alert('Berhasil mendaftar kegiatan!')" class="px-3 py-1 bg-primary text-white text-xs font-bold rounded-lg">Ikuti Kegiatan</button>
+                </div>
+            `).join('');
+
+            // Render Surat Warga
+            const mySurat = appData.surat.filter(s => s.pemohon === currentUser.nama);
+            document.getElementById('list-surat-warga').innerHTML = mySurat.map(s => `
+                <div class="bg-white border rounded-xl p-3 flex justify-between items-center text-xs">
+                    <div><span class="font-bold block">${s.jenis}</span><span class="text-gray-400">${s.keperluan}</span></div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.status==='Disetujui'?'bg-green-100 text-green-800':s.status==='Ditolak'?'bg-red-100 text-red-800':'bg-yellow-100 text-yellow-800'}">${s.status}</span>
+                </div>
+            `).join('') || `<p class="text-xs text-gray-400">Belum ada pengajuan surat.</p>`;
+
+            // Render Iuran Warga
+            const myIuran = appData.iuran.filter(i => i.warga === currentUser.nama);
+            document.getElementById('list-iuran-warga').innerHTML = myIuran.map(i => `
+                <div class="bg-white border rounded-xl p-3 flex justify-between items-center text-xs">
+                    <div><span class="font-bold block">${i.nama}</span><span class="text-gray-400">Rp ${i.jml.toLocaleString()}</span></div>
+                    <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded font-bold text-[10px]">${i.status}</span>
+                </div>
+            `).join('') || `<p class="text-xs text-gray-400">Belum ada riwayat pembayaran.</p>`;
+        }
+
+        function submitSurat(e) {
+            e.preventDefault();
+            const j = document.getElementById('surat-jenis').value;
+            const k = document.getElementById('surat-keperluan').value;
+            appData.surat.unshift({ id: Date.now(), pemohon: currentUser.nama, jenis: j, keperluan: k, status: "Diproses" });
+            saveData();
+            document.getElementById('surat-keperluan').value = '';
+            renderWargaViews();
+            alert('Pengajuan surat berhasil dikirim!');
+        }
+
+        function bayarIuran() {
+            appData.iuran.unshift({ id: Date.now(), warga: currentUser.nama, nama: "Iuran Kebersihan Bulan Ini", jml: 50000, status: "Menunggu Verifikasi" });
+            saveData();
+            renderWargaViews();
+            alert('Pembayaran iuran dikirim! Menunggu verifikasi admin.');
+        }
+
+        function submitAspirasi(e) {
+            e.preventDefault();
+            alert('Aspirasi berhasil disampaikan ke pengurus RT!');
+            document.getElementById('asp-topik').value = '';
+            document.getElementById('asp-pesan').value = '';
+        }
+
+        // Admin Portal Functions
+        function showAdminPortal() {
+            document.getElementById('view-admin').classList.remove('hidden-view');
+            document.getElementById('admin-user-name').innerText = currentUser.nama;
+            document.getElementById('admin-user-role').innerText = currentUser.role;
+
+            if (currentUser.role === 'super_admin') {
+                document.getElementById('adnav-superadmin').classList.remove('hidden');
+            }
+            renderAdminViews();
+        }
+
+        function switchAdminTab(sec) {
+            document.querySelectorAll('.admin-sec').forEach(el => el.classList.add('hidden-view'));
+            document.querySelectorAll('.admin-nav-btn').forEach(el => {
+                el.classList.remove('bg-primary', 'text-white');
+                el.classList.add('text-gray-600');
+            });
+
+            document.getElementById(`admin-sec-${sec}`).classList.remove('hidden-view');
+            document.getElementById(`adnav-${sec}`).classList.add('bg-primary', 'text-white');
+        }
+
+        function switchWargaMode() {
+            document.getElementById('view-admin').classList.add('hidden-view');
+            showWargaPortal();
+        }
+
+        function renderAdminViews() {
+            // Admin Warga Table
+            document.getElementById('table-warga-body').innerHTML = appData.warga.map(w => `
+                <tr>
+                    <td class="p-3 font-bold">${w.nama}</td>
+                    <td class="p-3 text-gray-500">${w.telp}</td>
+                    <td class="p-3 font-mono">${w.user}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-800 rounded text-[10px] font-bold">${w.role}</span></td>
+                    <td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-[10px] font-bold">${w.status}</span></td>
+                </tr>
+            `).join('');
+
+            // Admin Surat Table & Dash
+            const suratRows = appData.surat.map(s => `
+                <tr>
+                    <td class="p-3 font-bold">${s.pemohon}</td>
+                    <td class="p-3">${s.jenis}</td>
+                    <td class="p-3 text-gray-500">${s.keperluan}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.status==='Disetujui'?'bg-green-100 text-green-800':s.status==='Ditolak'?'bg-red-100 text-red-800':'bg-yellow-100 text-yellow-800'}">${s.status}</span></td>
+                    <td class="p-3 text-right">
+                        ${s.status === 'Diproses' ? `
+                            <button onclick="verifSurat(${s.id}, 'Disetujui')" class="px-2 py-1 bg-green-600 text-white rounded text-[10px] font-bold">Setujui</button>
+                            <button onclick="verifSurat(${s.id}, 'Ditolak')" class="px-2 py-1 bg-red-600 text-white rounded text-[10px] font-bold">Tolak</button>
+                        ` : `<span class="text-gray-400">Selesai</span>`}
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('table-surat-body').innerHTML = suratRows;
+            document.getElementById('list-surat-admin-dash').innerHTML = appData.surat.slice(0, 3).map(s => `
+                <div class="p-2 border rounded flex justify-between items-center text-xs">
+                    <div><span class="font-bold">${s.pemohon}</span> - <span>${s.jenis}</span></div>
+                    <span class="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded font-bold text-[10px]">${s.status}</span>
+                </div>
+            `).join('');
+
+            // Admin Iuran Table
+            document.getElementById('table-iuran-body').innerHTML = appData.iuran.map(i => `
+                <tr>
+                    <td class="p-3 font-bold">${i.warga}</td>
+                    <td class="p-3">${i.nama}</td>
+                    <td class="p-3 text-primary font-bold">Rp ${i.jml.toLocaleString()}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-[10px] font-bold">${i.status}</span></td>
+                    <td class="p-3 text-right">
+                        ${i.status === 'Menunggu Verifikasi' ? `
+                            <button onclick="verifIuran(${i.id}, 'Disetujui')" class="px-2 py-1 bg-green-600 text-white rounded text-[10px] font-bold">Setujui</button>
+                        ` : `<span class="text-gray-400">Selesai</span>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function verifSurat(id, st) {
+            const item = appData.surat.find(s => s.id === id);
+            if (item) item.status = st;
+            saveData();
+            renderAdminViews();
+        }
+
+        function verifIuran(id, st) {
+            const item = appData.iuran.find(i => i.id === id);
+            if (item) item.status = st;
+            saveData();
+            renderAdminViews();
+        }
+
+        function tambahWargaModal() {
+            const nama = prompt("Nama Warga Baru:");
+            if (nama) {
+                appData.warga.push({ id: Date.now(), nama: nama, telp: "0812000000", user: nama.toLowerCase().replace(/\s/g,''), pwd: "123", role: "warga", status: "Tetap" });
+                saveData();
+                renderAdminViews();
+            }
+        }
+    </script>
+</body>
+</html>
