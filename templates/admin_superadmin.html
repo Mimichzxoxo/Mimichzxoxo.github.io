@@ -1,0 +1,196 @@
+{% extends 'admin_base.html' %}
+{% set active_page = 'superadmin' %}
+{% block title %}SIM RT/RW - Portal Super Admin, SP, Trigger & DCL{% endblock %}
+
+{% block content %}
+<div class="p-8 space-y-8 max-w-[1560px] mx-auto w-full">
+    <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+        <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-tertiary-fixed text-on-tertiary-fixed text-xs font-semibold tracking-wide uppercase">
+                <span class="material-symbols-outlined text-[15px]">admin_panel_settings</span>
+                Modul Agregasi: Stored Procedure, Database Trigger & DCL
+            </div>
+            <h1 class="font-headline-lg text-2xl font-bold text-on-surface tracking-tight">
+                Portal Super Admin & Manajemen Hak Akses Database (DCL)
+            </h1>
+            <p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                Tarik rangkuman data agregat seluruh wilayah RT menggunakan Stored Procedure 5, serta pantau status Database Trigger dan Pengaturan Akun Pengguna DCL.
+            </p>
+        </div>
+    </div>
+
+    <!-- SP 5 Trigger Filter Form -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/40">
+        <h2 class="text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">analytics</span>
+            <span>Eksekusi Stored Procedure: sp_GetDashboardSuperAdmin(p_bulan, p_tahun)</span>
+        </h2>
+        <form action="/admin/superadmin" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Filter Bulan</label>
+                <select name="bulan" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    <option value="">Semua Bulan</option>
+                    <option value="Januari" {% if selected_bulan == 'Januari' %}selected{% endif %}>Januari</option>
+                    <option value="Februari" {% if selected_bulan == 'Februari' %}selected{% endif %}>Februari</option>
+                    <option value="Maret" {% if selected_bulan == 'Maret' %}selected{% endif %}>Maret</option>
+                    <option value="April" {% if selected_bulan == 'April' %}selected{% endif %}>April</option>
+                    <option value="Mei" {% if selected_bulan == 'Mei' %}selected{% endif %}>Mei</option>
+                    <option value="Juni" {% if selected_bulan == 'Juni' %}selected{% endif %}>Juni</option>
+                    <option value="Juli" {% if selected_bulan == 'Juli' %}selected{% endif %}>Juli</option>
+                    <option value="Agustus" {% if selected_bulan == 'Agustus' %}selected{% endif %}>Agustus</option>
+                    <option value="September" {% if selected_bulan == 'September' %}selected{% endif %}>September</option>
+                    <option value="Oktober" {% if selected_bulan == 'Oktober' %}selected{% endif %}>Oktober</option>
+                    <option value="November" {% if selected_bulan == 'November' %}selected{% endif %}>November</option>
+                    <option value="Desember" {% if selected_bulan == 'Desember' %}selected{% endif %}>Desember</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Filter Tahun</label>
+                <input name="tahun" type="number" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" value="{{ selected_tahun or 2024 }}"/>
+            </div>
+            <div>
+                <button type="submit" class="w-full py-2.5 bg-primary text-on-primary font-bold text-sm rounded-lg hover:bg-primary-container shadow-sm transition-all flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                    <span>Jalankan sp_GetDashboardSuperAdmin</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- SP 5 Result Output Cards & Table -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-6">
+        <h2 class="text-lg font-bold text-on-surface">Hasil Eksekusi Agregat sp_GetDashboardSuperAdmin</h2>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="bg-surface-container text-xs text-outline uppercase">
+                        <th class="p-3">ID RT</th>
+                        <th class="p-3">Wilayah RT / RW</th>
+                        <th class="p-3">Kelurahan & Kecamatan</th>
+                        <th class="p-3 text-center">Total Warga</th>
+                        <th class="p-3 text-center">Total Keluarga (KK)</th>
+                        <th class="p-3 text-right">Total Iuran Terkumpul (Lunas)</th>
+                        <th class="p-3 text-center">Antrean Verifikasi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container font-numeric-table">
+                    {% for row in sp_dashboard_data %}
+                    <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-bold text-primary">#{{ row.id_rt }}</td>
+                        <td class="p-3 font-bold text-on-surface">RT {{ row.nomor_rt }} / RW {{ row.rw }}</td>
+                        <td class="p-3 text-outline text-xs">{{ row.kelurahan }}, {{ row.kecamatan }}</td>
+                        <td class="p-3 text-center font-bold">{{ row.total_warga }} Jiwa</td>
+                        <td class="p-3 text-center font-bold">{{ row.total_keluarga }} KK</td>
+                        <td class="p-3 text-right font-bold text-tertiary">Rp {{ "{:,.0f}".format(row.total_iuran_terkumpul) }}</td>
+                        <td class="p-3 text-center">
+                            {% if row.antrean_verifikasi > 0 %}
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-900 animate-pulse">
+                                {{ row.antrean_verifikasi }} Pending
+                            </span>
+                            {% else %}
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-surface-container text-outline">
+                                0 Pending
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="p-4 text-center text-xs text-outline">Data agregat tidak ditemukan.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 💡 TRIGGER & DCL SYSTEM INFRASTRUCTURE PANELS -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <!-- Panel 1: Database Triggers -->
+        <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4 border border-outline-variant/30">
+            <div class="flex items-center gap-3 border-b border-surface-container pb-3">
+                <div class="p-2 bg-primary/10 rounded-lg text-primary">
+                    <span class="material-symbols-outlined text-[24px]">bolt</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-on-surface text-base">Database Triggers (Aktif)</h3>
+                    <p class="text-xs text-outline">Otomatisasi logika tingkat basis data</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div class="p-3 bg-surface-container-low rounded-lg space-y-1">
+                    <div class="flex items-center justify-between font-bold text-primary">
+                        <span>⚡ trg_auto_no_surat</span>
+                        <span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded text-[10px]">BEFORE UPDATE</span>
+                    </div>
+                    <p class="text-on-surface-variant">Memformat & menggenerate nomor surat resmi otomatis (`045/ID/SP/RT02/BLN/THN`) ketika status permohonan disetujui.</p>
+                </div>
+
+                <div class="p-3 bg-surface-container-low rounded-lg space-y-1">
+                    <div class="flex items-center justify-between font-bold text-primary">
+                        <span>⚡ trg_auto_keuangan_pembayaran</span>
+                        <span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded text-[10px]">AFTER UPDATE</span>
+                    </div>
+                    <p class="text-on-surface-variant">Otomatis memasukkan catatan mutasi pemasukan ke tabel `keuangan` saat iuran diverifikasi 'Lunas'.</p>
+                </div>
+
+                <div class="p-3 bg-surface-container-low rounded-lg space-y-1">
+                    <div class="flex items-center justify-between font-bold text-primary">
+                        <span>⚡ trg_default_status_warga</span>
+                        <span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded text-[10px]">BEFORE INSERT</span>
+                    </div>
+                    <p class="text-on-surface-variant">Memastikan kolom `status_warga` terisi otomatis dengan nilai default 'Tetap' jika belum ditentukan.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel 2: DCL Privileges -->
+        <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4 border border-outline-variant/30">
+            <div class="flex items-center gap-3 border-b border-surface-container pb-3">
+                <div class="p-2 bg-secondary-fixed text-on-secondary-fixed rounded-lg">
+                    <span class="material-symbols-outlined text-[24px]">key</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-on-surface text-base">Hak Akses Pengguna DCL (Data Control Language)</h3>
+                    <p class="text-xs text-outline">Konfigurasi GRANT & REVOKE role database MySQL</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div class="p-3 bg-surface-container-low rounded-lg space-y-1">
+                    <div class="flex items-center justify-between font-bold text-on-surface">
+                        <span class="font-mono text-primary">👤 warga_user@localhost</span>
+                        <span class="px-2 py-0.5 bg-surface-container-high rounded text-[10px] text-outline">Role Warga</span>
+                    </div>
+                    <p class="font-mono text-[11px] text-outline bg-surface p-2 rounded">
+                        GRANT SELECT, INSERT, UPDATE ON smart_rt_db.aspirasi, surat, pembayaran, kegiatan, peserta_kegiatan TO 'warga_user'@'localhost';
+                    </p>
+                </div>
+
+                <div class="p-3 bg-surface-container-low rounded-lg space-y-1">
+                    <div class="flex items-center justify-between font-bold text-on-surface">
+                        <span class="font-mono text-primary">👤 admin_rt_user@localhost</span>
+                        <span class="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed rounded text-[10px] font-bold">Role Admin RT</span>
+                    </div>
+                    <p class="font-mono text-[11px] text-outline bg-surface p-2 rounded">
+                        GRANT SELECT, INSERT, UPDATE, DELETE ON smart_rt_db.* TO 'admin_rt_user'@'localhost';<br/>
+                        GRANT EXECUTE ON PROCEDURE smart_rt_db.sp_TambahWarga, sp_VerifikasiIuran TO 'admin_rt_user';
+                    </p>
+                </div>
+
+                <div class="p-3 bg-surface-container-low rounded-lg space-y-1">
+                    <div class="flex items-center justify-between font-bold text-on-surface">
+                        <span class="font-mono text-primary">👤 superadmin_user@localhost</span>
+                        <span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded text-[10px] font-bold">Role Super Admin</span>
+                    </div>
+                    <p class="font-mono text-[11px] text-outline bg-surface p-2 rounded">
+                        GRANT ALL PRIVILEGES ON smart_rt_db.* TO 'superadmin_user'@'localhost' WITH GRANT OPTION;
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

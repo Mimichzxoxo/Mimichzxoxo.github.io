@@ -1,0 +1,74 @@
+{% extends 'warga_base.html' %}
+{% set active_tab = 'iuran' %}
+{% block title %}Iuran & Pembayaran - Smart RT{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-stack-sm my-2">
+    <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background font-bold">Iuran & Pembayaran Warga</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Bayar iuran bulanan RT dan konfirmasi setoran Anda.</p>
+</div>
+
+{% if success_msg %}
+<div class="p-3 bg-secondary-fixed text-on-secondary-fixed-variant rounded-lg text-sm flex items-center gap-2">
+    <span class="material-symbols-outlined">check_circle</span>
+    <span>{{ success_msg }}</span>
+</div>
+{% endif %}
+
+<!-- Form Bayar Iuran (`sp_CatatIuran`) -->
+<section class="bg-surface border border-outline-variant rounded-xl p-4 my-2 shadow-sm">
+    <h2 class="font-headline-md text-on-background font-bold text-lg mb-3">Bayar Iuran Online</h2>
+    <form class="flex flex-col gap-3" action="/warga/iuran/bayar" method="POST">
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-on-surface font-semibold text-xs">Pilih Tagihan Iuran</label>
+            <select name="id_iuran" class="h-element-height-tap w-full rounded-lg border border-outline-variant px-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none" required>
+                {% for i in iuran_list %}
+                <option value="{{ i.id_iuran }}">{{ i.nama_iuran }} - Rp {{ "{:,.0f}".format(i.nominal) }} ({{ i.bulan }} {{ i.tahun }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-on-surface font-semibold text-xs">Metode Pembayaran</label>
+            <select name="metode_bayar" class="h-element-height-tap w-full rounded-lg border border-outline-variant px-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                <option value="Transfer Bank">Transfer Bank (BCA / Mandiri / BRI)</option>
+                <option value="QRIS">QRIS / E-Wallet (Gopay/OVO/Dana)</option>
+                <option value="Tunai">Tunai / Bayar ke Pengurus</option>
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-on-surface font-semibold text-xs">Nominal Bayar (Rp)</label>
+            <input name="jumlah_bayar" type="number" step="1000" class="h-element-height-tap rounded-lg border border-outline-variant px-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="150000" required/>
+        </div>
+        <button class="h-element-height-tap w-full bg-primary-container text-on-primary rounded-xl font-label-md text-sm font-semibold flex items-center justify-center mt-1 active:scale-[0.98] transition-transform shadow-sm" type="submit">
+            Kirim Pembayaran (SP Catat Iuran)
+        </button>
+    </form>
+</section>
+
+<!-- Payment History -->
+<section class="my-4">
+    <h2 class="font-headline-md text-on-background font-bold text-lg mb-3">Riwayat Pembayaran Saya</h2>
+    <div class="flex flex-col gap-3">
+        {% for p in pembayaran_list %}
+        <div class="bg-surface rounded-xl border border-outline-variant p-4 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-xs text-outline font-semibold">{{ p.metode_bayar }} • {{ p.tanggal_bayar }}</span>
+                <h3 class="font-bold text-on-surface text-base mt-0.5">{{ p.nama_iuran }}</h3>
+                <p class="text-sm font-bold text-primary">Rp {{ "{:,.0f}".format(p.jumlah_bayar) }}</p>
+            </div>
+            <div>
+                {% if p.status_verifikasi == 'Lunas' %}
+                <span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed font-bold text-xs rounded-full">Lunas</span>
+                {% else %}
+                <span class="px-3 py-1 bg-amber-100 text-amber-900 font-bold text-xs rounded-full">Pending</span>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="p-6 text-center text-outline bg-surface rounded-xl border border-outline-variant text-sm">
+            Belum ada data pembayaran.
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

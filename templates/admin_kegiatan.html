@@ -1,0 +1,125 @@
+{% extends 'admin_base.html' %}
+{% set active_page = 'kegiatan' %}
+{% block title %}SIM RT/RW - Manajemen Kegiatan & Presensi Peserta{% endblock %}
+
+{% block content %}
+<div class="p-8 space-y-8 max-w-[1560px] mx-auto w-full">
+    <!-- Header Section -->
+    <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+        <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed text-xs font-semibold tracking-wide uppercase">
+                <span class="material-symbols-outlined text-[15px]">event_available</span>
+                Modul Terpadu ERD: KEGIATAN & PESERTA_KEGIATAN
+            </div>
+            <h1 class="font-headline-lg text-2xl font-bold text-on-surface tracking-tight">
+                Manajemen Kegiatan & Presensi Peserta Warga
+            </h1>
+            <p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                Kelola agenda kerja bakti, posyandu, dan presensi absensi warga secara interaktif dengan rekapitulasi data partisipasi transparan.
+            </p>
+        </div>
+    </div>
+
+    {% if success_msg %}
+    <div class="p-3 bg-secondary-fixed text-on-secondary-fixed-variant rounded-lg text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span>{{ success_msg }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Create Agenda Form -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/40">
+        <h2 class="text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">add_circle</span>
+            <span>+ Buat Agenda Kegiatan Baru</span>
+        </h2>
+        <form action="/admin/kegiatan/tambah" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Nama Kegiatan</label>
+                <input name="nama_kegiatan" type="text" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="Contoh: Kerja Bakti Bulanan RT 02" required/>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Tanggal & Waktu</label>
+                <input name="tanggal_kegiatan" type="datetime-local" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" required/>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Wilayah RT</label>
+                <select name="id_rt" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    {% for r in rt_list %}
+                    <option value="{{ r.id_rt }}">RT {{ r.nomor_rt }} / RW {{ r.rw }} ({{ r.kelurahan }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Lokasi</label>
+                <input name="lokasi" type="text" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="Sepanjang Jalan Merpati" required/>
+            </div>
+            <div class="md:col-span-2 flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Keterangan / Detail Agenda</label>
+                <textarea name="keterangan" rows="2" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary resize-none" placeholder="Deskripsi singkat kegiatan..." required></textarea>
+            </div>
+            <div class="md:col-span-2">
+                <button type="submit" class="px-6 py-2.5 bg-primary text-on-primary font-bold text-sm rounded-lg hover:bg-primary-container shadow-sm transition-all">
+                    Simpan Agenda Baru
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Data Tables List -->
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <!-- List Kegiatan -->
+        <div class="xl:col-span-7 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+            <h2 class="text-lg font-bold text-on-surface mb-4">Daftar Agenda Kegiatan RT/RW</h2>
+            <div class="space-y-4">
+                {% for k in kegiatan_list %}
+                <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant/30 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <span class="px-2.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed text-xs font-bold">RT {{ k.nomor_rt }}</span>
+                        <span class="text-xs text-outline font-semibold">{{ k.tanggal_kegiatan }}</span>
+                    </div>
+                    <h3 class="font-bold text-on-surface text-base">{{ k.nama_kegiatan }}</h3>
+                    <p class="text-xs text-on-surface-variant">Lokasi: {{ k.lokasi }} • PJ: {{ k.pj_nama or 'Pengurus RT' }}</p>
+                    <p class="text-sm text-outline">{{ k.keterangan }}</p>
+                </div>
+                {% else %}
+                <p class="text-xs text-outline text-center py-4">Belum ada agenda kegiatan.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Presensi Peserta -->
+        <div class="xl:col-span-5 bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+            <h2 class="text-lg font-bold text-on-surface mb-4">Presensi Peserta Warga</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="bg-surface-container text-xs text-outline uppercase">
+                            <th class="p-2.5">Warga</th>
+                            <th class="p-2.5">Kegiatan</th>
+                            <th class="p-2.5">Kehadiran</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-surface-container">
+                        {% for p in peserta_list %}
+                        <tr>
+                            <td class="p-2.5 font-semibold text-on-surface">{{ p.nama_warga }}</td>
+                            <td class="p-2.5 text-xs text-outline">{{ p.nama_kegiatan }}</td>
+                            <td class="p-2.5">
+                                <span class="px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed text-xs font-bold rounded">
+                                    {{ p.status_kehadiran }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="p-4 text-center text-xs text-outline">Belum ada data presensi.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends 'admin_base.html' %}
+{% set active_page = 'warga' %}
+{% block title %}SIM RT/RW - Data Warga & Stored Procedure 1{% endblock %}
+
+{% block content %}
+<div class="p-8 space-y-8 max-w-[1560px] mx-auto w-full">
+    <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+        <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-primary-fixed text-on-primary-fixed text-xs font-semibold tracking-wide uppercase">
+                <span class="material-symbols-outlined text-[15px]">badge</span>
+                Stored Procedure 1: sp_TambahWarga
+            </div>
+            <h1 class="font-headline-lg text-2xl font-bold text-on-surface tracking-tight">
+                Pengelolaan Data Warga & Keluarga
+            </h1>
+            <p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                Tambahkan warga baru tanpa memerlukan NIK sensitif sesuai kebijakan privasi warga.
+            </p>
+        </div>
+    </div>
+
+    {% if success_msg %}
+    <div class="p-3 bg-secondary-fixed text-on-secondary-fixed-variant rounded-lg text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span>{{ success_msg }}</span>
+    </div>
+    {% endif %}
+
+    <!-- SP 1 Form: sp_TambahWarga -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/40">
+        <h2 class="text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">person_add</span>
+            <span>+ Eksekusi Stored Procedure: sp_TambahWarga</span>
+        </h2>
+        <form action="/admin/warga/tambah" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Pilih Keluarga / Alamat</label>
+                <select name="id_keluarga" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    {% for k in keluarga_list %}
+                    <option value="{{ k.id_keluarga }}">RT {{ k.nomor_rt }} - {{ k.alamat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Nama Warga Lengkap</label>
+                <input name="nama" type="text" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="Contoh: Anisa Putri" required/>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Jenis Kelamin</label>
+                <select name="jenis_kelamin" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    <option value="L">Laki-laki (L)</option>
+                    <option value="P">Perempuan (P)</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">No Telepon / WhatsApp</label>
+                <input name="no_telepon" type="text" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="081234567890" required/>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Email / Username Login</label>
+                <input name="email_username" type="text" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="anisa" required/>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Password Login</label>
+                <input name="password" type="password" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="warga123" required/>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Role Akses</label>
+                <select name="role" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    <option value="warga">Warga</option>
+                    <option value="admin_rt">Admin RT</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Status Tempat Tinggal</label>
+                <select name="status_warga" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    <option value="Tetap">Tetap</option>
+                    <option value="Kontrak">Kontrak</option>
+                    <option value="Kos">Kos</option>
+                </select>
+            </div>
+            <div class="md:col-span-3 pt-2">
+                <button type="submit" class="px-6 py-2.5 bg-primary text-on-primary font-bold text-sm rounded-lg hover:bg-primary-container shadow-sm transition-all">
+                    Jalankan sp_TambahWarga
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Data Warga -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+        <h2 class="text-lg font-bold text-on-surface mb-4">Daftar Warga Terdaftar</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="bg-surface-container text-xs text-outline uppercase">
+                        <th class="p-3">ID Warga</th>
+                        <th class="p-3">Nama Warga</th>
+                        <th class="p-3">L/P</th>
+                        <th class="p-3">No Telepon</th>
+                        <th class="p-3">Username</th>
+                        <th class="p-3">RT / Alamat</th>
+                        <th class="p-3">Role</th>
+                        <th class="p-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container">
+                    {% for w in warga_list %}
+                    <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-bold text-primary">#{{ w.id_warga }}</td>
+                        <td class="p-3 font-semibold text-on-surface">{{ w.nama }}</td>
+                        <td class="p-3">{{ w.jenis_kelamin }}</td>
+                        <td class="p-3">{{ w.no_telepon or '-' }}</td>
+                        <td class="p-3 font-mono text-xs">{{ w.email_username }}</td>
+                        <td class="p-3">RT {{ w.nomor_rt }} - {{ w.alamat }}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-xs font-bold bg-surface-container">{{ w.role }}</span></td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-xs font-bold bg-secondary-fixed text-on-secondary-fixed">{{ w.status_warga }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

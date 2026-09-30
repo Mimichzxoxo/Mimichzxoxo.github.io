@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}Smart RT{% endblock %}</title>
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "on-background": "#191c1d",
+                        "surface-bright": "#f8f9fa",
+                        "secondary-fixed-dim": "#88d982",
+                        "secondary": "#1b6d24",
+                        "on-primary-fixed": "#001c38",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#604100",
+                        "surface-container-low": "#f3f4f5",
+                        "surface": "#f8f9fa",
+                        "tertiary": "#472f00",
+                        "on-tertiary-fixed": "#281900",
+                        "background": "#f8f9fa",
+                        "on-primary-fixed-variant": "#004882",
+                        "surface-container": "#edeeef",
+                        "on-secondary-fixed-variant": "#005312",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#27609d",
+                        "surface-container-high": "#e7e8e9",
+                        "primary-container": "#004b87",
+                        "secondary-fixed": "#a3f69c",
+                        "outline-variant": "#c2c6d1",
+                        "tertiary-fixed": "#ffdeac",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#644400",
+                        "primary-fixed": "#d3e4ff",
+                        "on-secondary-fixed": "#002204",
+                        "primary": "#003461",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#d9dadb",
+                        "on-primary-container": "#8abcff",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#a3c9ff",
+                        "on-secondary-container": "#217128",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#f5ac00",
+                        "tertiary-fixed-dim": "#ffba38",
+                        "primary-fixed-dim": "#a3c9ff",
+                        "inverse-surface": "#2e3132",
+                        "on-surface": "#191c1d",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-surface-variant": "#424750",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#727781",
+                        "secondary-container": "#a0f399"
+                    },
+                    "spacing": {
+                        "margin-page": "20px",
+                        "element-height-tap": "48px",
+                        "stack-sm": "8px",
+                        "stack-lg": "24px",
+                        "stack-md": "16px",
+                        "gutter-grid": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8f9fa; min-height: 100vh; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-[80px]">
+    <!-- TopAppBar -->
+    <header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant">
+        <div class="flex items-center justify-between px-margin-page h-element-height-tap w-full max-w-[600px] mx-auto">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold text-sm">
+                    {{ session['user_name'][0] if session.get('user_name') else 'W' }}
+                </div>
+                <span class="font-headline-md text-headline-md text-primary font-bold">Smart RT</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs text-on-surface-variant hidden sm:inline">{{ session['user_name'] }}</span>
+                <a href="/logout" class="w-8 h-8 flex items-center justify-center rounded-full text-error hover:bg-error-container transition-colors" title="Keluar">
+                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="w-full max-w-[600px] mx-auto pt-[72px] px-margin-page flex flex-col gap-stack-lg">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- BottomNavBar -->
+    <nav class="fixed bottom-0 w-full z-50 bg-surface border-t border-outline-variant md:hidden">
+        <div class="flex justify-around items-center h-[64px] px-2 w-full max-w-[600px] mx-auto left-0 right-0">
+            <a href="/warga/pengumuman" class="flex flex-col items-center justify-center {% if active_tab == 'pengumuman' %}text-primary font-bold{% else %}text-on-surface-variant{% endif %} hover:bg-surface-container-low transition-colors w-16 h-full rounded-xl">
+                <span class="material-symbols-outlined mb-1">campaign</span>
+                <span class="font-label-md text-[10px]">Info</span>
+            </a>
+            <a href="/warga/kegiatan" class="flex flex-col items-center justify-center {% if active_tab == 'kegiatan' %}text-primary font-bold{% else %}text-on-surface-variant{% endif %} hover:bg-surface-container-low transition-colors w-16 h-full rounded-xl">
+                <span class="material-symbols-outlined mb-1">event</span>
+                <span class="font-label-md text-[10px]">Kegiatan</span>
+            </a>
+            <a href="/warga/iuran" class="flex flex-col items-center justify-center {% if active_tab == 'iuran' %}text-primary font-bold{% else %}text-on-surface-variant{% endif %} hover:bg-surface-container-low transition-colors w-16 h-full rounded-xl">
+                <span class="material-symbols-outlined mb-1">payments</span>
+                <span class="font-label-md text-[10px]">Iuran</span>
+            </a>
+            <a href="/warga/surat" class="flex flex-col items-center justify-center {% if active_tab == 'surat' %}text-primary font-bold{% else %}text-on-surface-variant{% endif %} hover:bg-surface-container-low transition-colors w-16 h-full rounded-xl">
+                <span class="material-symbols-outlined mb-1">description</span>
+                <span class="font-label-md text-[10px]">Surat</span>
+            </a>
+            <a href="/warga/aspirasi" class="flex flex-col items-center justify-center {% if active_tab == 'aspirasi' %}text-primary font-bold{% else %}text-on-surface-variant{% endif %} hover:bg-surface-container-low transition-colors w-16 h-full rounded-xl">
+                <span class="material-symbols-outlined mb-1">forum</span>
+                <span class="font-label-md text-[10px]">Aspirasi</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Desktop Side Nav (Visible only on md+) -->
+    <nav class="hidden md:flex flex-col fixed left-0 top-[64px] h-full w-64 border-r border-outline-variant bg-surface p-4 gap-2">
+        <div class="px-4 py-2 text-xs font-bold text-outline uppercase tracking-wider">Navigasi Warga</div>
+        <a href="/warga/pengumuman" class="flex items-center gap-4 px-4 py-3 rounded-lg {% if active_tab == 'pengumuman' %}bg-primary-container text-on-primary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-colors">
+            <span class="material-symbols-outlined">campaign</span>
+            <span>Pengumuman</span>
+        </a>
+        <a href="/warga/kegiatan" class="flex items-center gap-4 px-4 py-3 rounded-lg {% if active_tab == 'kegiatan' %}bg-primary-container text-on-primary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-colors">
+            <span class="material-symbols-outlined">event</span>
+            <span>Kegiatan Warga</span>
+        </a>
+        <a href="/warga/iuran" class="flex items-center gap-4 px-4 py-3 rounded-lg {% if active_tab == 'iuran' %}bg-primary-container text-on-primary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-colors">
+            <span class="material-symbols-outlined">payments</span>
+            <span>Iuran & Pembayaran</span>
+        </a>
+        <a href="/warga/surat" class="flex items-center gap-4 px-4 py-3 rounded-lg {% if active_tab == 'surat' %}bg-primary-container text-on-primary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-colors">
+            <span class="material-symbols-outlined">description</span>
+            <span>Surat Pengantar</span>
+        </a>
+        <a href="/warga/aspirasi" class="flex items-center gap-4 px-4 py-3 rounded-lg {% if active_tab == 'aspirasi' %}bg-primary-container text-on-primary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-low{% endif %} transition-colors">
+            <span class="material-symbols-outlined">forum</span>
+            <span>Aspirasi & Pengaduan</span>
+        </a>
+    </nav>
+</body>
+</html>

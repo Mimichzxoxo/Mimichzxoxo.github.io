@@ -1,0 +1,63 @@
+{% extends 'warga_base.html' %}
+{% set active_tab = 'aspirasi' %}
+{% block title %}Aspirasi Warga - Smart RT{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-stack-sm my-2">
+    <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background font-bold">Aspirasi & Pengaduan Warga</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Sampaikan saran, keluhan, atau ide untuk lingkungan kita.</p>
+</div>
+
+{% if success_msg %}
+<div class="p-3 bg-secondary-fixed text-on-secondary-fixed-variant rounded-lg text-sm flex items-center gap-2">
+    <span class="material-symbols-outlined">check_circle</span>
+    <span>{{ success_msg }}</span>
+</div>
+{% endif %}
+
+<!-- Submission Form -->
+<section class="bg-surface border border-outline-variant rounded-xl p-stack-md my-2 shadow-sm">
+    <h2 class="font-headline-md text-headline-md text-on-background font-bold text-lg mb-3">Form Aspirasi</h2>
+    <form class="flex flex-col gap-stack-md" action="/warga/aspirasi" method="POST">
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface font-semibold text-xs">Judul Aspirasi</label>
+            <input name="judul" class="h-element-height-tap rounded-lg border border-outline-variant px-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="Contoh: Perbaikan Lampu Jalan" type="text" required/>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-label-md text-on-surface font-semibold text-xs">Deskripsi Laporan</label>
+            <textarea name="isi_laporan" class="rounded-lg border border-outline-variant p-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none" placeholder="Jelaskan detail aspirasi atau pengaduan Anda..." rows="3" required></textarea>
+        </div>
+        <button class="h-element-height-tap w-full bg-primary-container text-on-primary rounded-xl font-label-md text-sm font-semibold flex items-center justify-center mt-2 active:scale-[0.98] transition-transform shadow-sm" type="submit">
+            Kirim Aspirasi
+        </button>
+    </form>
+</section>
+
+<!-- Tracking Section -->
+<section class="my-4">
+    <h2 class="font-headline-md text-headline-md text-on-background font-bold text-lg mb-3">Aspirasi Saya</h2>
+    <div class="flex flex-col gap-stack-md">
+        {% for a in aspirasi_list %}
+        <div class="bg-surface rounded-xl border border-outline-variant p-stack-md shadow-sm p-4">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h3 class="font-headline-md text-headline-md text-on-background font-bold text-base">{{ a.judul }}</h3>
+                </div>
+                {% if a.status == 'selesai' %}
+                <span class="inline-block px-3 py-1 bg-secondary/15 text-secondary rounded-full font-label-md text-[11px] font-bold">Selesai</span>
+                {% elif a.status == 'diproses' %}
+                <span class="inline-block px-3 py-1 bg-tertiary-fixed-dim/30 text-tertiary-container rounded-full font-label-md text-[11px] font-bold">Diproses</span>
+                {% else %}
+                <span class="inline-block px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full font-label-md text-[11px] font-bold">Pending</span>
+                {% endif %}
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant text-sm mt-1">{{ a.isi_laporan }}</p>
+        </div>
+        {% else %}
+        <div class="p-6 text-center text-outline bg-surface rounded-xl border border-outline-variant text-sm">
+            Anda belum pernah mengirim aspirasi.
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

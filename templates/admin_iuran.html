@@ -1,0 +1,120 @@
+{% extends 'admin_base.html' %}
+{% set active_page = 'iuran' %}
+{% block title %}SIM RT/RW - Verifikasi Iuran (SP 3){% endblock %}
+
+{% block content %}
+<div class="p-8 space-y-8 max-w-[1560px] mx-auto w-full">
+    <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+        <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed text-xs font-semibold tracking-wide uppercase">
+                <span class="material-symbols-outlined text-[15px]">verified</span>
+                Stored Procedure 3: sp_VerifikasiIuran
+            </div>
+            <h1 class="font-headline-lg text-2xl font-bold text-on-surface tracking-tight">
+                Verifikasi Pembayaran Iuran & Pencatatan Kas Otomatis
+            </h1>
+            <p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                Saat pengurus menyetujui setoran iuran, `sp_VerifikasiIuran` secara otomatis mencatat transaksi ke Buku Kas RT tanpa perlu mengetik ulang!
+            </p>
+        </div>
+    </div>
+
+    {% if success_msg %}
+    <div class="p-3 bg-secondary-fixed text-on-secondary-fixed-variant rounded-lg text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span>{{ success_msg }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Create Iuran Item Form -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/40">
+        <h2 class="text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">add_card</span>
+            <span>+ Buat Master Tagihan Iuran Baru</span>
+        </h2>
+        <form action="/admin/iuran/master/tambah" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Pilih Wilayah RT</label>
+                <select name="id_rt" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    {% for r in rt_list %}
+                    <option value="{{ r.id_rt }}">RT {{ r.nomor_rt }} / RW {{ r.rw }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Nama Tagihan Iuran</label>
+                <input name="nama_iuran" type="text" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="Iuran Sampah & Ronda" required/>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Nominal (Rp)</label>
+                <input name="nominal" type="number" step="1000" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="150000" required/>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Bulan / Tahun</label>
+                <input name="bulan" type="text" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" value="Oktober" required/>
+            </div>
+            <div class="md:col-span-4">
+                <button type="submit" class="px-6 py-2.5 bg-primary text-on-primary font-bold text-sm rounded-lg hover:bg-primary-container shadow-sm transition-all">
+                    Simpan Master Iuran
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Pembayaran to Verify (`sp_VerifikasiIuran`) -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm space-y-4">
+        <h2 class="text-lg font-bold text-on-surface">Antrean Pembayaran Warga (`sp_VerifikasiIuran`)</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="bg-surface-container text-xs text-outline uppercase">
+                        <th class="p-3">ID Bayar</th>
+                        <th class="p-3">Warga Pemohon</th>
+                        <th class="p-3">Nama Iuran</th>
+                        <th class="p-3">Metode</th>
+                        <th class="p-3">Nominal Setor</th>
+                        <th class="p-3">Tanggal Bayar</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3 text-right">Eksekusi SP 3</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container">
+                    {% for p in pembayaran_list %}
+                    <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-bold text-primary">#{{ p.id_pembayaran }}</td>
+                        <td class="p-3 font-semibold text-on-surface">{{ p.nama_warga }}</td>
+                        <td class="p-3">{{ p.nama_iuran }}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-xs bg-surface-container font-semibold">{{ p.metode_bayar }}</span></td>
+                        <td class="p-3 font-bold text-primary">Rp {{ "{:,.0f}".format(p.jumlah_bayar) }}</td>
+                        <td class="p-3 text-xs text-outline">{{ p.tanggal_bayar }}</td>
+                        <td class="p-3">
+                            {% if p.status_verifikasi == 'Lunas' %}
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-tertiary-fixed text-on-tertiary-fixed">Lunas</span>
+                            {% else %}
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-3 text-right">
+                            {% if p.status_verifikasi != 'Lunas' %}
+                            <form action="/admin/iuran/verifikasi" method="POST" class="inline-block">
+                                <input type="hidden" name="id_pembayaran" value="{{ p.id_pembayaran }}">
+                                <button name="status_baru" value="Lunas" class="px-3 py-1.5 bg-tertiary text-on-tertiary text-xs font-bold rounded-lg hover:bg-tertiary-container shadow-sm transition-all">
+                                    ✓ Verifikasi & Masuk Buku Kas (SP 3)
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-xs text-tertiary font-bold">Terverifikasi</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="p-4 text-center text-xs text-outline">Belum ada transaksi pembayaran.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

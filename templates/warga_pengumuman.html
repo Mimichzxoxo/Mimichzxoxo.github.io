@@ -1,0 +1,37 @@
+{% extends 'warga_base.html' %}
+{% set active_tab = 'pengumuman' %}
+{% block title %}Pengumuman - Smart RT{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-stack-sm my-2">
+    <h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface font-bold">Pengumuman RT/RW</h2>
+    <p class="font-body-md text-body-md text-on-surface-variant">Informasi terbaru dari pengurus RT/RW Anda</p>
+</div>
+
+<!-- Categories / Filters -->
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+    <button class="min-h-element-height-tap px-4 rounded-full bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center whitespace-nowrap">Semua</button>
+    <button class="min-h-element-height-tap px-4 rounded-full border border-outline-variant bg-surface text-on-surface font-label-md text-label-md flex items-center justify-center whitespace-nowrap">Penting (Urgent)</button>
+    <button class="min-h-element-height-tap px-4 rounded-full border border-outline-variant bg-surface text-on-surface font-label-md text-label-md flex items-center justify-center whitespace-nowrap">Informasi</button>
+</div>
+
+<!-- Announcements Feed -->
+<div class="flex flex-col gap-stack-md my-2">
+    {% for p in pengumuman_list %}
+    <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm p-4 flex flex-col gap-2 transition-transform hover:-translate-y-1">
+        <div class="flex justify-between items-start">
+            <span class="px-2 py-1 rounded bg-primary-container/15 text-primary-container font-label-md text-xs font-semibold inline-flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">campaign</span> RT {{ p.nomor_rt }} / RW {{ p.rw }}
+            </span>
+            <span class="font-body-md text-outline text-[12px]">{{ p.tanggal_publish }}</span>
+        </div>
+        <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-lg">{{ p.judul }}</h3>
+        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">{{ p.konten }}</p>
+    </div>
+    {% else %}
+    <div class="p-8 text-center text-outline bg-surface rounded-xl border border-outline-variant">
+        Belum ada pengumuman terbaru.
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

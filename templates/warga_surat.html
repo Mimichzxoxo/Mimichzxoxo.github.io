@@ -1,0 +1,71 @@
+{% extends 'warga_base.html' %}
+{% set active_tab = 'surat' %}
+{% block title %}Surat Pengantar - Smart RT{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-stack-sm my-2">
+    <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background font-bold">Permohonan Surat Pengantar</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">Ajukan surat pengantar RT/RW secara online tanpa antre.</p>
+</div>
+
+{% if success_msg %}
+<div class="p-3 bg-secondary-fixed text-on-secondary-fixed-variant rounded-lg text-sm flex items-center gap-2">
+    <span class="material-symbols-outlined">check_circle</span>
+    <span>{{ success_msg }}</span>
+</div>
+{% endif %}
+
+<!-- Form Request Surat (`sp_AjukanSuratPengantar`) -->
+<section class="bg-surface border border-outline-variant rounded-xl p-4 my-2 shadow-sm">
+    <h2 class="font-headline-md text-on-background font-bold text-lg mb-3">Buat Permohonan Surat Baru</h2>
+    <form class="flex flex-col gap-3" action="/warga/surat" method="POST">
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-on-surface font-semibold text-xs">Jenis Surat</label>
+            <select name="jenis_surat" class="h-element-height-tap w-full rounded-lg border border-outline-variant px-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                <option value="Surat Keterangan Domisili">Surat Keterangan Domisili</option>
+                <option value="Surat Keterangan Usaha (SKU)">Surat Keterangan Usaha (SKU)</option>
+                <option value="SKTM (Tidak Mampu)">SKTM (Tidak Mampu)</option>
+                <option value="Pengantar Pembuatan KTP-el">Pengantar Pembuatan KTP-el</option>
+                <option value="Pengantar Kartu Keluarga">Pengantar Kartu Keluarga</option>
+            </select>
+        </div>
+        <div class="flex flex-col gap-1">
+            <label class="font-label-md text-on-surface font-semibold text-xs">Keperluan / Alasan</label>
+            <textarea name="keperluan" class="rounded-lg border border-outline-variant p-3 font-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none" placeholder="Jelaskan keperluan pembuatan surat ini..." rows="3" required></textarea>
+        </div>
+        <button class="h-element-height-tap w-full bg-primary-container text-on-primary rounded-xl font-label-md text-sm font-semibold flex items-center justify-center mt-1 active:scale-[0.98] transition-transform shadow-sm" type="submit">
+            Kirim Permohonan Surat (SP)
+        </button>
+    </form>
+</section>
+
+<!-- History Section -->
+<section class="my-4">
+    <h2 class="font-headline-md text-on-background font-bold text-lg mb-3">Riwayat Surat Saya</h2>
+    <div class="flex flex-col gap-3">
+        {% for s in surat_list %}
+        <div class="bg-surface rounded-xl border border-outline-variant p-4 shadow-sm">
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <span class="inline-block px-2 py-0.5 bg-primary-fixed text-on-primary-fixed rounded text-xs font-semibold mb-1">
+                        {{ s.no_surat or 'Belum ada nomor' }}
+                    </span>
+                    <h3 class="font-headline-md text-on-background font-bold text-base">{{ s.jenis_surat }}</h3>
+                </div>
+                <span class="inline-block px-3 py-1 bg-surface-container-high rounded-full font-label-md text-xs font-semibold text-primary">
+                    {{ s.status }}
+                </span>
+            </div>
+            <p class="font-body-md text-on-surface-variant text-xs">Keperluan: {{ s.keperluan }}</p>
+            <div class="mt-2 pt-2 border-t border-outline-variant/30 text-[11px] text-outline">
+                Tanggal Pengajuan: {{ s.tanggal_surat }}
+            </div>
+        </div>
+        {% else %}
+        <div class="p-6 text-center text-outline bg-surface rounded-xl border border-outline-variant text-sm">
+            Belum ada permohonan surat.
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

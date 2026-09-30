@@ -1,0 +1,119 @@
+{% extends 'admin_base.html' %}
+{% set active_page = 'keuangan' %}
+{% block title %}SIM RT/RW - Buku Kas & Keuangan RT/RW{% endblock %}
+
+{% block content %}
+<div class="p-8 space-y-8 max-w-[1560px] mx-auto w-full">
+    <div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2">
+        <div class="space-y-2 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed text-xs font-semibold tracking-wide uppercase">
+                <span class="material-symbols-outlined text-[15px]">account_balance_wallet</span>
+                Modul ERD: KEUANGAN
+            </div>
+            <h1 class="font-headline-lg text-2xl font-bold text-on-surface tracking-tight">
+                Buku Kas & Transaksi Keuangan RT/RW
+            </h1>
+            <p class="font-body-md text-sm text-on-surface-variant leading-relaxed">
+                Catat pemasukan kas iuran serta pengeluaran operasional secara terperinci.
+            </p>
+        </div>
+    </div>
+
+    {% if success_msg %}
+    <div class="p-3 bg-secondary-fixed text-on-secondary-fixed-variant rounded-lg text-sm flex items-center gap-2">
+        <span class="material-symbols-outlined">check_circle</span>
+        <span>{{ success_msg }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Manual Expense/Income Input -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/40">
+        <h2 class="text-lg font-bold text-on-surface mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">add_card</span>
+            <span>+ Input Transaksi Kas Manual</span>
+        </h2>
+        <form action="/admin/keuangan/tambah" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Pilih RT</label>
+                <select name="id_rt" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    {% for r in rt_list %}
+                    <option value="{{ r.id_rt }}">RT {{ r.nomor_rt }} / RW {{ r.rw }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Jenis Transaksi</label>
+                <select name="jenis" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    <option value="pemasukan">Pemasukan (+)</option>
+                    <option value="pengeluaran">Pengeluaran (-)</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Kategori</label>
+                <select name="kategori" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary">
+                    <option value="iuran">iuran</option>
+                    <option value="pembelian">pembelian</option>
+                    <option value="konsumsi kegiatan">konsumsi kegiatan</option>
+                    <option value="lainnya">lainnya</option>
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Nominal (Rp)</label>
+                <input name="jumlah" type="number" step="1000" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="500000" required/>
+            </div>
+            <div class="md:col-span-4 flex flex-col gap-1">
+                <label class="text-xs font-bold text-on-surface">Keterangan Catatan</label>
+                <input name="keterangan" type="text" class="p-2.5 bg-surface-container-low rounded-lg text-sm border-0 focus:ring-2 focus:ring-primary" placeholder="Pengeluaran konsumsi kerja bakti..." required/>
+            </div>
+            <div class="md:col-span-4">
+                <button type="submit" class="px-6 py-2.5 bg-primary text-on-primary font-bold text-sm rounded-lg hover:bg-primary-container shadow-sm transition-all">
+                    Simpan Transaksi Kas
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Table Keuangan -->
+    <div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm">
+        <h2 class="text-lg font-bold text-on-surface mb-4">Mutasi Buku Kas RT/RW</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="bg-surface-container text-xs text-outline uppercase">
+                        <th class="p-3">Tanggal</th>
+                        <th class="p-3">RT</th>
+                        <th class="p-3">Jenis</th>
+                        <th class="p-3">Kategori</th>
+                        <th class="p-3">Keterangan</th>
+                        <th class="p-3 text-right">Jumlah (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container">
+                    {% for k in keuangan_list %}
+                    <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 text-xs text-outline font-mono">{{ k.tanggal }}</td>
+                        <td class="p-3 font-semibold">RT {{ k.nomor_rt }}</td>
+                        <td class="p-3">
+                            {% if k.jenis == 'pemasukan' %}
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-tertiary-fixed text-on-tertiary-fixed">+ Pemasukan</span>
+                            {% else %}
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-error-container text-on-error-container">- Pengeluaran</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-xs bg-surface-container font-semibold">{{ k.kategori }}</span></td>
+                        <td class="p-3">{{ k.keterangan }}</td>
+                        <td class="p-3 text-right font-bold {% if k.jenis == 'pemasukan' %}text-tertiary{% else %}text-error{% endif %}">
+                            Rp {{ "{:,.0f}".format(k.jumlah) }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="p-4 text-center text-xs text-outline">Belum ada mutasi keuangan.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>{% block title %}SIM RT/RW - Portal Administrasi{% endblock %}</title>
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <style>
+        @layer base { 
+            html, body { margin: 0; padding: 0; } 
+            body { overscroll-behavior: none; } 
+            main > :first-child { margin-top: 0 !important; } 
+            main > :last-child { margin-bottom: 0 !important; } 
+        } 
+        ::-webkit-scrollbar { display: none; } 
+        .custom-scrollbar::-webkit-scrollbar { display: block; width: 5px; } 
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; } 
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d3e4fe; border-radius: 9999px; }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = { 
+            darkMode: "class", 
+            theme: { 
+                extend: { 
+                    "colors": { 
+                        "inverse-primary": "#93ccff", 
+                        "on-primary-fixed": "#001d31", 
+                        "outline-variant": "#bfc7d2", 
+                        "on-error-container": "#93000a", 
+                        "surface-container-highest": "#d3e4fe", 
+                        "secondary-fixed": "#c4e7ff", 
+                        "tertiary": "#006947", 
+                        "on-secondary-container": "#004d6a", 
+                        "on-tertiary-container": "#f5fff6", 
+                        "primary-fixed": "#cce5ff", 
+                        "on-secondary-fixed": "#001e2c", 
+                        "primary": "#006194", 
+                        "surface-tint": "#006398", 
+                        "secondary-container": "#40c2fd", 
+                        "on-tertiary-fixed": "#002113", 
+                        "tertiary-container": "#00855b", 
+                        "secondary": "#00668a", 
+                        "on-primary-fixed-variant": "#004b73", 
+                        "background": "#f8f9ff", 
+                        "on-error": "#ffffff", 
+                        "error-container": "#ffdad6", 
+                        "primary-container": "#007bb9", 
+                        "tertiary-fixed-dim": "#4edea3", 
+                        "outline": "#707881", 
+                        "secondary-fixed-dim": "#7bd0ff", 
+                        "inverse-surface": "#213145", 
+                        "primary-fixed-dim": "#93ccff", 
+                        "tertiary-fixed": "#6ffbbe", 
+                        "on-tertiary": "#ffffff", 
+                        "on-secondary-fixed-variant": "#004c69", 
+                        "on-tertiary-fixed-variant": "#005236", 
+                        "on-surface": "#0b1c30", 
+                        "surface": "#f8f9ff", 
+                        "surface-variant": "#d3e4fe", 
+                        "on-primary": "#ffffff", 
+                        "surface-bright": "#f8f9ff", 
+                        "surface-container": "#e5eeff", 
+                        "surface-container-low": "#eff4ff", 
+                        "on-secondary": "#ffffff", 
+                        "surface-container-high": "#dce9ff", 
+                        "surface-dim": "#cbdbf5", 
+                        "surface-container-lowest": "#ffffff", 
+                        "on-background": "#0b1c30", 
+                        "on-surface-variant": "#3f4850", 
+                        "on-primary-container": "#fdfcff", 
+                        "error": "#ba1a1a", 
+                        "inverse-on-surface": "#eaf1ff" 
+                    }, 
+                    "borderRadius": { 
+                        "DEFAULT": "0.25rem", 
+                        "lg": "0.5rem", 
+                        "xl": "0.75rem", 
+                        "full": "9999px" 
+                    }, 
+                    "fontFamily": { 
+                        "title-lg": ["Plus Jakarta Sans"], 
+                        "body-md": ["Plus Jakarta Sans"], 
+                        "headline-lg": ["Plus Jakarta Sans"], 
+                        "headline-md": ["Plus Jakarta Sans"], 
+                        "label-md": ["Inter"], 
+                        "label-sm": ["Inter"] 
+                    } 
+                } 
+            } 
+        };
+    </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased">
+
+    <!-- Sidebar Desktop -->
+    <aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest z-50 flex flex-col shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
+        <div class="h-16 flex items-center px-6 gap-3 bg-surface-container-lowest border-b border-surface-container">
+            <span class="material-symbols-outlined text-primary text-3xl">shield</span>
+            <div class="flex flex-col">
+                <span class="font-title-md text-primary font-bold tracking-tight leading-none text-lg">SIM RT/RW</span>
+                <span class="font-label-sm text-outline tracking-wider uppercase mt-1 text-[11px]">Portal Warga RW 08</span>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-4 py-4 custom-scrollbar">
+            <!-- Menu Utama -->
+            <div class="mb-2 px-3">
+                <span class="font-label-sm text-outline uppercase tracking-wider text-[11px] font-bold">Menu Utama</span>
+            </div>
+            <nav class="space-y-1 mb-6">
+                <a href="/admin/dashboard" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-all {% if active_page == 'dashboard' %}bg-primary-container text-on-primary-container font-semibold shadow-sm{% else %}text-on-surface-variant hover:bg-surface-container hover:text-on-surface{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">grid_view</span>
+                        <span class="font-label-md">Dashboard</span>
+                    </div>
+                </a>
+                <a href="/admin/warga" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-all {% if active_page == 'warga' %}bg-primary-container text-on-primary-container font-semibold shadow-sm{% else %}text-on-surface-variant hover:bg-surface-container hover:text-on-surface{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">group</span>
+                        <span class="font-label-md">Data Warga & SP</span>
+                    </div>
+                </a>
+            </nav>
+
+            <!-- Kegiatan & Fasilitas -->
+            <div class="mb-2 px-3">
+                <span class="font-label-sm text-outline uppercase tracking-wider text-[11px] font-bold">Kegiatan & Fasilitas</span>
+            </div>
+            <nav class="space-y-1 mb-6">
+                <a href="/admin/kegiatan" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-all {% if active_page == 'kegiatan' %}bg-primary-container text-on-primary-container font-semibold shadow-sm{% else %}text-on-surface-variant hover:bg-surface-container hover:text-on-surface{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">event_upcoming</span>
+                        <span class="font-label-md">Kegiatan & Presensi</span>
+                    </div>
+                </a>
+                <a href="/admin/inventaris" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-all {% if active_page == 'inventaris' %}bg-primary-container text-on-primary-container font-semibold shadow-sm{% else %}text-on-surface-variant hover:bg-surface-container hover:text-on-surface{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">inventory_2</span>
+                        <span class="font-label-md">Inventaris RT/RW</span>
+                    </div>
+                </a>
+            </nav>
+
+            <!-- Layanan & Keuangan -->
+            <div class="mb-2 px-3">
+                <span class="font-label-sm text-outline uppercase tracking-wider text-[11px] font-bold">Layanan & Keuangan</span>
+            </div>
+            <nav class="space-y-1 mb-6">
+                <a href="/admin/surat" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-all {% if active_page == 'surat' %}bg-primary-container text-on-primary-container font-semibold shadow-sm{% else %}text-on-surface-variant hover:bg-surface-container hover:text-on-surface{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">mark_email_unread</span>
+                        <span class="font-label-md">Surat & TTE Digital</span>
+                    </div>
+                </a>
+                <a href="/admin/iuran" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-all {% if active_page == 'iuran' %}bg-primary-container text-on-primary-container font-semibold shadow-sm{% else %}text-on-surface-variant hover:bg-surface-container hover:text-on-surface{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">payments</span>
+                        <span class="font-label-md">Iuran & Verifikasi SP</span>
+                    </div>
+                </a>
+                <a href="/admin/keuangan" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-all {% if active_page == 'keuangan' %}bg-primary-container text-on-primary-container font-semibold shadow-sm{% else %}text-on-surface-variant hover:bg-surface-container hover:text-on-surface{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                        <span class="font-label-md">Buku Kas RT/RW</span>
+                    </div>
+                </a>
+            </nav>
+
+            <!-- Sistem & Super Admin -->
+            <div class="mb-2 px-3">
+                <span class="font-label-sm text-outline uppercase tracking-wider text-[11px] font-bold">Super Admin</span>
+            </div>
+            <nav class="space-y-1 mb-4">
+                <a href="/admin/superadmin" class="flex items-center justify-between px-3 py-2.5 rounded-lg transition-all {% if active_page == 'superadmin' %}bg-primary-container text-on-primary-container font-semibold shadow-sm{% else %}text-on-surface-variant hover:bg-surface-container hover:text-on-surface{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                        <span class="font-label-md">Dashboard SP Super Admin</span>
+                    </div>
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-4 bg-surface-container-low border-t border-surface-container">
+            <a href="/logout" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-error hover:bg-error-container hover:text-on-error-container transition-all">
+                <span class="material-symbols-outlined text-[20px]">logout</span>
+                <span class="font-label-md">Keluar Sesi</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="pl-72">
+        <!-- Top Header -->
+        <header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-8">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2 font-label-md text-outline">
+                    <span class="material-symbols-outlined text-[18px]">home_pin</span>
+                    <span>RW 08 Sukamaju</span>
+                    <span class="text-outline-variant">/</span>
+                    <span class="text-primary font-semibold">Portal Administrasi</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-5">
+                <div class="hidden xl:flex items-center gap-2 font-numeric-table text-body-sm text-outline">
+                    <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                    <span>{{ now_date or 'Hari ini' }}</span>
+                </div>
+                <div class="flex items-center gap-3 pl-3">
+                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">
+                        {{ session['user_name'][0] if session.get('user_name') else 'A' }}
+                    </div>
+                    <div class="flex flex-col text-left">
+                        <span class="font-label-md text-on-surface font-semibold leading-tight">{{ session['user_name'] or 'Administrator' }}</span>
+                        <span class="font-label-sm text-primary leading-tight mt-0.5 text-xs">{{ session['role'] or 'Super Admin RT/RW' }}</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="w-full pt-16 bg-surface">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

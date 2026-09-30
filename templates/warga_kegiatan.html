@@ -1,0 +1,66 @@
+{% extends 'warga_base.html' %}
+{% set active_tab = 'kegiatan' %}
+{% block title %}Kegiatan Warga - Smart RT{% endblock %}
+
+{% block content %}
+<div class="flex flex-col gap-stack-sm my-2">
+    <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-bold">Kegiatan Warga</h2>
+    <p class="font-body-md text-body-md text-on-surface-variant">Jadwal kegiatan rutin dan khusus lingkungan kita.</p>
+</div>
+
+{% if success_msg %}
+<div class="p-3 bg-secondary-fixed text-on-secondary-fixed-variant rounded-lg text-sm flex items-center gap-2">
+    <span class="material-symbols-outlined">check_circle</span>
+    <span>{{ success_msg }}</span>
+</div>
+{% endif %}
+
+<!-- Event Cards List -->
+<div class="flex flex-col gap-stack-md my-2">
+    {% for k in kegiatan_list %}
+    <div class="bg-surface border border-outline-variant rounded-xl overflow-hidden flex flex-col group relative">
+        <div class="p-4 flex flex-col gap-3">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="bg-secondary/15 text-secondary px-2 py-0.5 rounded-full font-label-md text-[10px] font-semibold uppercase tracking-wider">RT {{ k.nomor_rt }}</span>
+                    <h3 class="font-headline-md text-headline-md text-on-surface font-bold text-lg mt-1">{{ k.nama_kegiatan }}</h3>
+                </div>
+                <div class="bg-primary text-on-primary rounded-lg flex flex-col items-center justify-center w-12 h-12 shadow-sm shrink-0">
+                    <span class="font-label-md text-sm font-bold leading-tight">{{ k.tanggal_kegiatan[:10] }}</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2 font-body-md text-body-md text-on-surface-variant text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">schedule</span>
+                    <span>Waktu: {{ k.tanggal_kegiatan }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">location_on</span>
+                    <span>Lokasi: {{ k.lokasi }}</span>
+                </div>
+                <p class="text-on-surface-variant mt-1 text-sm">{{ k.keterangan }}</p>
+            </div>
+
+            <div class="h-[1px] bg-outline-variant/50 w-full my-1"></div>
+
+            <div class="flex items-center justify-between mt-1">
+                <div class="text-xs text-outline font-semibold">
+                    PJ: {{ k.pj_nama or 'Pengurus RT' }}
+                </div>
+                <form action="/warga/kegiatan/rsvp" method="POST">
+                    <input type="hidden" name="id_kegiatan" value="{{ k.id_kegiatan }}">
+                    <button class="h-10 px-6 bg-primary-container text-on-primary rounded-lg font-label-md text-sm font-semibold flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-sm">
+                        Ikut Serta
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="p-8 text-center text-outline bg-surface rounded-xl border border-outline-variant">
+        Belum ada kegiatan terdaftar.
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
