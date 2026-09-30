@@ -324,13 +324,26 @@
             <!-- Admin Section: Warga -->
             <div id="admin-sec-warga" class="admin-sec hidden-view space-y-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-md">Daftar Data Kependudukan Warga</h3>
-                    <button onclick="tambahWargaModal()" class="px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg">+ Tambah Warga</button>
+                    <div>
+                        <h3 class="font-bold text-md text-on-surface">Daftar Data Kependudukan Warga</h3>
+                        <p class="text-xs text-gray-500">Kelola data warga, username, password, dan status tempat tinggal</p>
+                    </div>
+                    <button onclick="openModalTambahWarga()" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary-container flex items-center gap-1 shadow-sm">
+                        <span class="material-symbols-outlined text-sm">person_add</span> + Tambah Warga
+                    </button>
                 </div>
                 <div class="bg-white rounded-xl border overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-gray-50 text-gray-500 uppercase">
-                            <tr><th class="p-3">Nama</th><th class="p-3">No Telp</th><th class="p-3">Username</th><th class="p-3">Role</th><th class="p-3">Status</th></tr>
+                            <tr>
+                                <th class="p-3">Nama Warga</th>
+                                <th class="p-3">JK</th>
+                                <th class="p-3">No Telepon</th>
+                                <th class="p-3">Username</th>
+                                <th class="p-3">Alamat / Rumah</th>
+                                <th class="p-3">Role</th>
+                                <th class="p-3">Status</th>
+                            </tr>
                         </thead>
                         <tbody id="table-warga-body" class="divide-y"></tbody>
                     </table>
@@ -384,14 +397,93 @@
         </main>
     </div>
 
+    <!-- ==================== MODAL TAMBAH WARGA LENGKAP ==================== -->
+    <div id="modal-tambah-warga" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center border-b pb-3">
+                <div class="flex items-center gap-2 text-primary font-bold text-md">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <h3>Form Tambah Warga Baru</h3>
+                </div>
+                <button onclick="closeModalTambahWarga()" class="text-gray-400 hover:text-gray-600">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+
+            <form onsubmit="handleFormTambahWarga(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-gray-700 block mb-1">Pilih Keluarga / Alamat Rumah</label>
+                    <select id="w-form-alamat" class="w-full h-10 border border-gray-300 rounded-xl px-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none" required>
+                        <option value="RT 01 - Jl. Merpati No. 12, RT 01">RT 01 - Jl. Merpati No. 12, RT 01</option>
+                        <option value="RT 01 - Jl. Elang No. 05, RT 01">RT 01 - Jl. Elang No. 05, RT 01</option>
+                        <option value="RT 01 - Jl. Garuda No. 08, RT 01">RT 01 - Jl. Garuda No. 08, RT 01</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-700 block mb-1">Nama Warga Lengkap</label>
+                        <input id="w-form-nama" type="text" placeholder="Contoh: Anisa Putri" class="w-full h-10 border border-gray-300 rounded-xl px-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none" required />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-700 block mb-1">Jenis Kelamin</label>
+                        <select id="w-form-jk" class="w-full h-10 border border-gray-300 rounded-xl px-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none" required>
+                            <option value="L">Laki-laki (L)</option>
+                            <option value="P">Perempuan (P)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-700 block mb-1">No Telepon / WhatsApp</label>
+                        <input id="w-form-telp" type="text" placeholder="081234567890" class="w-full h-10 border border-gray-300 rounded-xl px-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none" required />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-700 block mb-1">Email / Username Login</label>
+                        <input id="w-form-user" type="text" placeholder="anisa" class="w-full h-10 border border-gray-300 rounded-xl px-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none" required />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-700 block mb-1">Password Login</label>
+                        <input id="w-form-pwd" type="text" value="warga123" class="w-full h-10 border border-gray-300 rounded-xl px-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none" required />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-700 block mb-1">Role Akses</label>
+                        <select id="w-form-role" class="w-full h-10 border border-gray-300 rounded-xl px-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none" required>
+                            <option value="warga">Warga</option>
+                            <option value="admin_rt">Admin RT</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-700 block mb-1">Status Tempat Tinggal</label>
+                    <select id="w-form-status" class="w-full h-10 border border-gray-300 rounded-xl px-3 text-xs focus:ring-1 focus:ring-primary focus:outline-none" required>
+                        <option value="Tetap">Tetap</option>
+                        <option value="Kontrak">Kontrak</option>
+                        <option value="Kos">Kos</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="closeModalTambahWarga()" class="px-4 py-2 border rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary-container transition">Simpan Data Warga</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- JavaScript Logic -->
     <script>
         // Initial Demo State
         const defaultData = {
             warga: [
-                { id: 1, nama: "Budi Santoso", telp: "08123456789", user: "budi", pwd: "warga123", role: "warga", status: "Tetap" },
-                { id: 2, nama: "Pak Bambang (Admin RT)", telp: "08987654321", user: "admin_rt", pwd: "admin123", role: "admin_rt", status: "Tetap" },
-                { id: 3, nama: "Super Admin System", telp: "08111111111", user: "superadmin", pwd: "admin123", role: "super_admin", status: "Tetap" }
+                { id: 1, nama: "Budi Santoso", jk: "L", telp: "08123456789", user: "budi", pwd: "warga123", role: "warga", status: "Tetap", alamat: "RT 01 - Jl. Merpati No. 12" },
+                { id: 2, nama: "Pak Bambang (Admin RT)", jk: "L", telp: "08987654321", user: "admin_rt", pwd: "admin123", role: "admin_rt", status: "Tetap", alamat: "RT 01 - Jl. Elang No. 05" },
+                { id: 3, nama: "Super Admin System", jk: "L", telp: "08111111111", user: "superadmin", pwd: "admin123", role: "super_admin", status: "Tetap", alamat: "RT 01 - Kantor RT" }
             ],
             pengumuman: [
                 { id: 1, judul: "Kerja Bakti Massal Kebersihan Selokan", tgl: "30 Sep 2026", isi: "Dihimbau kepada seluruh warga RT 01/RW 05 untuk mengikuti kerja bakti pembersihan selokan pada Minggu pagi jam 07:00 WIB." },
@@ -567,10 +659,12 @@
             // Admin Warga Table
             document.getElementById('table-warga-body').innerHTML = appData.warga.map(w => `
                 <tr>
-                    <td class="p-3 font-bold">${w.nama}</td>
-                    <td class="p-3 text-gray-500">${w.telp}</td>
-                    <td class="p-3 font-mono">${w.user}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-800 rounded text-[10px] font-bold">${w.role}</span></td>
+                    <td class="p-3 font-bold text-on-surface">${w.nama}</td>
+                    <td class="p-3 text-gray-500">${w.jk || 'L'}</td>
+                    <td class="p-3 text-gray-500 font-mono">${w.telp}</td>
+                    <td class="p-3 font-mono font-bold text-primary">${w.user}</td>
+                    <td class="p-3 text-gray-500 text-[11px]">${w.alamat || 'RT 01 - Jl. Merpati No. 12'}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 bg-gray-100 text-gray-800 rounded text-[10px] font-bold uppercase">${w.role}</span></td>
                     <td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-[10px] font-bold">${w.status}</span></td>
                 </tr>
             `).join('');
@@ -584,8 +678,8 @@
                     <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.status==='Disetujui'?'bg-green-100 text-green-800':s.status==='Ditolak'?'bg-red-100 text-red-800':'bg-yellow-100 text-yellow-800'}">${s.status}</span></td>
                     <td class="p-3 text-right">
                         ${s.status === 'Diproses' ? `
-                            <button onclick="verifSurat(${s.id}, 'Disetujui')" class="px-2 py-1 bg-green-600 text-white rounded text-[10px] font-bold">Setujui</button>
-                            <button onclick="verifSurat(${s.id}, 'Ditolak')" class="px-2 py-1 bg-red-600 text-white rounded text-[10px] font-bold">Tolak</button>
+                            <button onclick="verifSurat(${s.id}, 'Disetujui')" class="px-2 py-1 bg-green-600 text-white rounded text-[10px] font-bold hover:bg-green-700">Setujui</button>
+                            <button onclick="verifSurat(${s.id}, 'Ditolak')" class="px-2 py-1 bg-red-600 text-white rounded text-[10px] font-bold hover:bg-red-700">Tolak</button>
                         ` : `<span class="text-gray-400">Selesai</span>`}
                     </td>
                 </tr>
@@ -608,7 +702,7 @@
                     <td class="p-3"><span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-[10px] font-bold">${i.status}</span></td>
                     <td class="p-3 text-right">
                         ${i.status === 'Menunggu Verifikasi' ? `
-                            <button onclick="verifIuran(${i.id}, 'Disetujui')" class="px-2 py-1 bg-green-600 text-white rounded text-[10px] font-bold">Setujui</button>
+                            <button onclick="verifIuran(${i.id}, 'Disetujui')" class="px-2 py-1 bg-green-600 text-white rounded text-[10px] font-bold hover:bg-green-700">Setujui</button>
                         ` : `<span class="text-gray-400">Selesai</span>`}
                     </td>
                 </tr>
@@ -629,13 +723,48 @@
             renderAdminViews();
         }
 
-        function tambahWargaModal() {
-            const nama = prompt("Nama Warga Baru:");
-            if (nama) {
-                appData.warga.push({ id: Date.now(), nama: nama, telp: "0812000000", user: nama.toLowerCase().replace(/\s/g,''), pwd: "123", role: "warga", status: "Tetap" });
-                saveData();
-                renderAdminViews();
-            }
+        // Open & Close Modal Tambah Warga
+        function openModalTambahWarga() {
+            document.getElementById('modal-tambah-warga').classList.remove('hidden');
+        }
+
+        function closeModalTambahWarga() {
+            document.getElementById('modal-tambah-warga').classList.add('hidden');
+        }
+
+        function handleFormTambahWarga(e) {
+            e.preventDefault();
+            const nama = document.getElementById('w-form-nama').value.trim();
+            const jk = document.getElementById('w-form-jk').value;
+            const telp = document.getElementById('w-form-telp').value.trim();
+            const user = document.getElementById('w-form-user').value.trim();
+            const pwd = document.getElementById('w-form-pwd').value.trim();
+            const role = document.getElementById('w-form-role').value;
+            const status = document.getElementById('w-form-status').value;
+            const alamat = document.getElementById('w-form-alamat').value;
+
+            appData.warga.push({
+                id: Date.now(),
+                nama: nama,
+                jk: jk,
+                telp: telp,
+                user: user,
+                pwd: pwd,
+                role: role,
+                status: status,
+                alamat: alamat
+            });
+
+            saveData();
+            renderAdminViews();
+            closeModalTambahWarga();
+
+            // Reset Form
+            document.getElementById('w-form-nama').value = '';
+            document.getElementById('w-form-telp').value = '';
+            document.getElementById('w-form-user').value = '';
+
+            alert(`Berhasil menambahkan warga baru: ${nama}`);
         }
     </script>
 </body>
